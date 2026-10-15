@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="YsHUnK8JK01y3yF1AnUN64">
+<head data-page-node-id="u3WkEshBCofvbIAN2IEHy0">
+<meta charset="UTF-8" data-page-node-id="JE0vfGFDDYVbZjQtMEtgTW">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="SS6yHuAhr5stqJCFGEeakh">
+<title>AI 行业日报看板</title>
+<style>
+  :root{
+    /* ---------- Mistral AI 设计令牌（暖象牙 / 阳光渐变 / 零圆角锐利几何） ---------- */
+    --m-orange:#fa520f;
+    --m-flame:#fb6424;
+    --m-block:#ff8105;
+    --m-sun-900:#ff8a00;
+    --m-sun-700:#ffa110;
+    --m-sun-500:#ffb83e;
+    --m-sun-300:#ffd06a;
+    --m-gold:#ffe295;
+    --m-yellow:#ffd900;
+    --m-ivory:#fffaeb;
+    --m-cream:#fff0c2;
+    --ink:#1f1f1f;
+    --ink-strong:#1f1f1f;
+    --gray-700:#3d3d3d;
+    --gray-600:#3d3d3d;
+    --gray-500:#7f6315;
+    --charcoal:#1f1f1f;
+    --white:#ffffff;
+    --surface-2:rgba(127,99,21,.08);
+    --line:rgba(127,99,21,.15);
+    --line-light:rgba(127,99,21,.08);
+    --green:#1f1f1f;
+    --green-deep:#1f1f1f;
+    --green-bg:#ffffff;
+    /* ---------- 语义别名（沿用既有类名） ---------- */
+    --bg-canvas:var(--m-ivory);
+    --bg-page:var(--m-ivory);
+    --bg-surface:var(--m-cream);
+    --bg-panel:var(--white);
+    --text-primary:var(--ink);
+    --text-secondary:var(--gray-700);
+    --text-tertiary:var(--gray-500);
+    --text-quaternary:var(--gray-500);
+    --text-muted:var(--gray-500);
+    --text-faint:var(--gray-500);
+    --brand:var(--m-orange);
+    --accent:var(--m-orange);
+    --accent-hover:var(--m-flame);
+    --success:var(--m-orange);
+    --emerald:var(--m-orange);
+    --border-primary:var(--line);
+    --border-subtle:var(--line-light);
+    --border-color:var(--line-light);
+    --color-black:var(--ink);
+    --color-white:var(--white);
+    --glass-dark:var(--m-cream);
+    --glass-light:var(--m-cream);
+    --tint-brand:rgba(250,82,15,.10);
+    --tint-brand-line:rgba(250,82,15,.35);
+    --tint-orange:rgba(250,82,15,.10);
+    --tint-orange-line:rgba(250,82,15,.35);
+    --tint-green:var(--white);
+    --tint-green-line:rgba(127,99,21,.28);
+    /* Mistral 字体体系：Arial 全家桶，raw clarity */
+    --font-sans:Arial,'Helvetica Neue',Helvetica,'PingFang SC','Microsoft YaHei',sans-serif;
+    --font-display:Arial,'Helvetica Neue',Helvetica,'PingFang SC','Microsoft YaHei',sans-serif;
+    --font-mono:'Roboto Mono',Consolas,'Courier New',Arial,'PingFang SC',monospace;
+    /* Mistral 圆角：一切归零，锐利建筑感 */
+    --r-badge:0px;
+    --r-btn:0px;
+    --r-nav:0px;
+    --r-card:0px;
+    --r-panel:0px;
+    --r-pill:0px;
+    /* Mistral 阴影体系：标志性金色多层暖影 */
+    --shadow-subtle:none;
+    --shadow-ambient:rgba(127,99,21,.14) 0px 10px 28px;
+    --shadow-card:-8px 16px 39px rgba(127,99,21,.12),-33px 64px 72px rgba(127,99,21,.10),-73px 144px 97px rgba(127,99,21,.06);
+    --shadow-deep:rgba(127,99,21,.16) 0px 16px 44px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+
+  body{
+    background:var(--bg-canvas);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    font-size:16px;font-weight:400;line-height:1.45;letter-spacing:0;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ============ 16:9 画板 ============ */
+  .stage{
+    position:relative;flex:0 0 auto;
+    width:1600px;height:900px;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+    border-radius:0;
+    background:var(--bg-page);
+    transform-origin:center center;
+    box-shadow:0 0 0 1px var(--line),rgba(127,99,21,.18) 0 24px 60px;
+  }
+
+  /* ============ 导航栏（Mistral：暖象牙毛玻璃 + 金色细线） ============ */
+  .nav{
+    flex:0 0 54px;height:54px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;
+    background:rgba(255,250,235,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .logo{
+    width:28px;height:28px;border-radius:0;
+    display:grid;place-items:center;flex:0 0 28px;
+    background:linear-gradient(135deg,#ffd900 0%,#ffa110 45%,#fa520f 100%);
+    color:var(--white);
+    font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:.5px;
+  }
+  .titles{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .nav-name{font-size:15px;font-weight:400;letter-spacing:-.3px;line-height:1;white-space:nowrap;color:var(--ink)}
+  .titles .sub{
+    font-family:var(--font-mono);font-size:10px;font-weight:400;letter-spacing:1.5px;
+    color:var(--gray-500);text-transform:uppercase;line-height:1;white-space:nowrap;
+  }
+  .topmeta{display:flex;align-items:center;gap:16px}
+  .window-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0;color:var(--gray-500)}
+  .window-tag b{color:var(--ink);font-weight:400}
+  .live{
+    display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;
+    background:#1A1A1A;color:#CCFF00;
+    font-family:var(--font-sans);font-size:12px;font-weight:600;letter-spacing:.5px;
+    padding:6px 14px;border-radius:100px;white-space:nowrap;
+  }
+  .live i{width:6px;height:6px;border-radius:50%;background:#CCFF00;animation:pulse 2s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(204,255,0,.45)}
+    70%{box-shadow:0 0 0 7px rgba(204,255,0,0)}
+    100%{box-shadow:0 0 0 0 rgba(204,255,0,0)}
+  }
+  .nav-cta{
+    cursor:pointer;border:none;font-family:var(--font-sans);
+    background:var(--charcoal);color:var(--white);
+    padding:9px 20px;border-radius:0;
+    font-size:13px;font-weight:400;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;
+    transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--m-orange)}
+  .nav-cta:focus-visible{outline:2px solid var(--m-orange);outline-offset:2px}
+
+  /* ============ Hero 标题区（Mistral：中央阳光径向辉光） ============ */
+  .hero-band{
+    position:relative;flex:0 0 auto;
+    padding:13px 40px 14px;
+    background:var(--m-ivory);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero-band::before{
+    content:"";position:absolute;
+    top:50%;left:50%;transform:translate(-50%,-50%);
+    width:1100px;height:460px;
+    pointer-events:none;
+    background:radial-gradient(circle,rgba(255,161,16,.10) 0%,rgba(250,82,15,.05) 40%,transparent 70%);
+  }
+  .hero-band > *{position:relative;z-index:1}
+  .hero-eyebrow{
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:2px;
+    text-transform:uppercase;color:var(--m-orange);
+  }
+  .hero-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:6px}
+  .hero-band h1{
+    font-family:var(--font-sans);
+    font-size:38px;font-weight:700;line-height:1.15;letter-spacing:-.5px;
+    color:#1A1A1A;
+  }
+  .hero-band h1 .accent{color:#1A1A1A}
+  .hero-sub{
+    margin-top:8px;
+    font-size:14px;font-weight:400;line-height:1.5;letter-spacing:0;
+    color:#888888;
+  }
+  /* —— 顶部标签筛选：橙色高亮块 transition:transform .3s 平滑滑动（不再生硬变色） —— */
+  .hero-tabs{position:relative;display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .tab-ind{
+    position:absolute;left:0;top:0;z-index:0;
+    width:0;height:0;background:var(--m-orange);border-radius:0;
+    opacity:0;pointer-events:none;
+    transition:transform .3s cubic-bezier(.22,.72,.2,1),
+               width .3s cubic-bezier(.22,.72,.2,1),
+               height .3s ease,opacity .24s ease;
+    will-change:transform,width;
+  }
+  .tab-ind.ready{opacity:1}
+  .hero-tab{
+    position:relative;z-index:1;
+    cursor:pointer;border:1px solid transparent;border-radius:0;
+    background:transparent;color:var(--gray-700);
+    font-family:var(--font-sans);
+    padding:5px 14px;
+    font-size:13px;font-weight:400;letter-spacing:.3px;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:color .3s ease;
+  }
+  .hero-tab:hover{color:var(--ink)}
+  .hero-tab.active{color:var(--white)}
+  .hero-tab:focus-visible{outline:2px solid var(--m-orange);outline-offset:2px}
+  /* 数字微型徽章：未选中=浅灰底深灰字 / 选中=白底橙字 */
+  .tbadge{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:19px;height:19px;padding:0 6px;border-radius:20px;
+    font-family:var(--font-mono);font-size:11px;font-weight:600;line-height:1;letter-spacing:0;
+    background:#F3F4F6;color:#4B5563;
+    transition:background .3s ease,color .3s ease;
+  }
+  .hero-tab.active .tbadge{background:var(--white);color:#EA580C}
+  .tunit{font-size:12px;color:var(--gray-500);transition:color .3s ease}
+  .hero-tab.active .tunit{color:rgba(255,255,255,.82)}
+  /* 「精选」与板块同时生效时的半选态：橙色文字提示 AND 组合 */
+  .hero-tab.semi{color:#EA580C}
+  .hero-tab.semi .tbadge{background:#FFF7ED;color:#EA580C}
+  .hero-tab.semi .tunit{color:#EA580C}
+
+  /* ============ 主栅格 ============ */
+  .main{flex:1;min-height:0;display:flex;gap:18px;padding:12px 40px 0}
+  .left{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+  .right{flex:0 0 372px;width:372px}
+
+  /* ============ 今日重点摘要（Mistral 奶油卡：以底色定义，无描边） ============ */
+  .summary{
+    flex:0 0 auto;
+    padding:11px 20px 11px 16px;
+    border:none;border-left:4px solid #EA580C;
+    border-radius:0;
+    background:var(--white);
+    box-shadow:none;
+    animation:rise .6s cubic-bezier(.22,.72,.2,1) backwards;
+  }
+  .sec-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .sec-head .dot{width:8px;height:8px;border-radius:0;background:var(--m-orange);flex:0 0 8px}
+  .sec-head h2{font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:2px;color:var(--m-orange);text-transform:uppercase}
+  .sec-head .en{font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:2px;color:var(--gray-500);text-transform:uppercase}
+  .sumlist{
+    margin:8px 0 0;padding:0;list-style:none;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .sumlist li{
+    position:relative;padding-left:17px;
+    font-size:14px;font-weight:400;line-height:1.5;color:var(--gray-700);
+  }
+  .sumlist li::before{
+    content:"";position:absolute;left:2px;top:.5em;
+    width:7px;height:7px;background:var(--m-orange);
+  }
+  .sumlist li b{color:var(--ink);font-weight:600}
+  .chips{
+    display:flex;flex-wrap:nowrap;gap:8px;margin-top:9px;
+    overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  }
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;white-space:nowrap;
+    font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:.3px;
+    color:var(--gray-700);
+    border:1px solid var(--line);border-radius:0;
+    padding:5px 12px;background:var(--white);
+  }
+  .chip b{color:var(--ink);font-weight:400}
+  .chip.up{background:var(--tint-brand);border-color:var(--tint-brand-line);color:var(--m-orange)}
+  .chip.up b{color:var(--m-orange)}
+
+  /* ============ 重要程度筛选 ============ */
+  .filterbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;gap:11px;
+    animation:rise .6s cubic-bezier(.22,.72,.2,1) backwards;
+  }
+  .filter-label{
+    font-family:var(--font-sans);font-size:12px;font-weight:400;
+    letter-spacing:2px;color:var(--gray-500);text-transform:uppercase;
+  }
+  .segmented{
+    display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;
+    padding:0;border:none;background:transparent;
+  }
+  /* 传统标签过滤器：描边胶囊 + 浅橙选中（不再用纯色滑块） */
+  .seg{
+    cursor:pointer;border:1px solid #E5E7EB;border-radius:20px;background:transparent;
+    font-family:var(--font-sans);font-size:12.5px;font-weight:400;letter-spacing:.3px;
+    color:#4B5563;white-space:nowrap;
+    padding:5px 13px;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background .25s ease,border-color .25s ease,color .25s ease,box-shadow .25s ease;
+  }
+  .seg:hover{color:#C2410C;border-color:rgba(250,82,15,.45);background:#FFF7ED}
+  .seg b{font-family:var(--font-mono);font-size:11px;font-weight:400;color:#9CA3AF;transition:color .25s ease}
+  .seg.active{background:#FFF7ED;border-color:#EA580C;color:#EA580C}
+  .seg.active:hover{background:#FFF7ED;border-color:#EA580C;color:#C2410C}
+  .seg.active b{color:#EA580C}
+  .seg:focus-visible{outline:2px solid var(--m-orange);outline-offset:2px}
+  .filter-count{
+    margin-left:auto;
+    font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:.2px;color:var(--gray-500);
+  }
+
+  /* ============ 新闻卡片（Mistral 奶油卡：平底色，无描边无阴影） ============ */
+  .cards{
+    flex:1;min-height:0;display:grid;gap:10px;align-items:start;
+    opacity:1;transform:translateY(0);
+    transition:opacity .3s ease,transform .3s ease;
+  }
+  /* 切换筛选时列表淡出 → 换内容 → 淡入 */
+  .cards.is-fade{opacity:0;transform:translateY(8px)}
+  .col-stack{display:contents}
+
+  /* 视图布局：全部 / 高优先级 / 中优先级 */
+  .cards[data-view="all"]{grid-template-columns:1.5fr 1fr;grid-template-rows:auto auto}
+  .cards[data-view="all"] .card-feat{grid-column:1;grid-row:1 / span 2}
+  .cards[data-view="all"] .news[data-card="2"]{grid-column:2;grid-row:1}
+  .cards[data-view="all"] .news[data-card="3"]{grid-column:2;grid-row:2}
+
+  .cards[data-view="high"]{grid-template-columns:1.15fr 1fr;grid-template-rows:auto}
+  .cards[data-view="high"] .card-feat{grid-column:1;grid-row:1}
+  .cards[data-view="high"] .news[data-card="2"]{grid-column:2;grid-row:1}
+
+  .cards[data-view="mid"]{grid-template-columns:1fr;grid-template-rows:auto}
+  .cards[data-view="mid"] .news[data-card="3"]{grid-column:1;grid-row:1}
+
+  /* 板块标签激活时统一单列，避免单张卡片被双列栅格甩到一侧 */
+  .cards.cat-narrow{grid-template-columns:1fr;grid-template-rows:auto}
+  .cards.cat-narrow .news{grid-column:1;grid-row:auto}
+
+  /* 板块无对应精读卡片时的空态占位 */
+  .cards-empty{
+    grid-column:1 / -1;
+    display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+    padding:24px 22px;
+    background:var(--white);
+    border-left:4px solid #EA580C;
+    animation:rise .4s cubic-bezier(.22,.72,.2,1) backwards;
+  }
+  .cards-empty[hidden]{display:none}
+  .cards-empty .ce-t{font-size:13.5px;font-weight:400;line-height:1.6;color:#4B5563}
+  .cards-empty .ce-btn{
+    cursor:pointer;border:1px solid #E5E7EB;border-radius:20px;background:transparent;
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:0;color:#4B5563;
+    padding:5px 14px;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .cards-empty .ce-btn:hover{background:#FFF7ED;border-color:rgba(250,82,15,.35);color:#C2410C}
+  .cards-empty .ce-btn:focus-visible{outline:2px solid var(--m-orange);outline-offset:2px}
+
+  .news{
+    position:relative;
+    display:flex;flex-direction:column;
+    padding:16px;
+    border:1px solid rgba(234,88,12,.22);
+    border-radius:8px;
+    background:linear-gradient(to left,#fed7aa,#fff7ed);
+    box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    transition:all .3s ease;
+    animation:rise .6s cubic-bezier(.22,.72,.2,1) backwards;
+  }
+  .news:hover{
+    transform:translateY(-4px);
+    border-color:rgba(234,88,12,.45);
+    box-shadow:0 14px 22px -6px rgba(234,88,12,.18),0 6px 10px -4px rgba(0,0,0,.08);
+  }
+  .news[hidden]{display:none}
+
+  /* 头条卡片：Mistral「Golden Float」—— 奶油底 + 标志性金色五层暖影 */
+  .card-feat{
+    padding:16px;
+    border:none;
+    border-radius:8px;
+    box-shadow:var(--shadow-card);
+  }
+  .card-feat:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 30px -10px rgba(127,99,21,.28),var(--shadow-card);
+  }
+  .card-feat::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:4px;
+    border-radius:8px 8px 0 0;
+    background:linear-gradient(90deg,#ffd900 0%,#ffa110 48%,#fa520f 100%);
+  }
+  .card-feat .nhead .idx{font-size:13px}
+  .card-feat .nhead .cat{font-size:12.5px;padding:4px 12px}
+  .card-feat .ntitle{margin-top:10px;font-family:var(--font-display);font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.6px}
+  .card-feat .ndesc{
+    margin-top:9px;flex:0 1 auto;min-height:0;
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    font-size:15.5px;font-weight:400;line-height:1.52;letter-spacing:0;
+    color:var(--gray-700);
+    overflow-wrap:break-word;word-break:break-word;
+  }
+  .card-feat .nstat{margin-top:10px;gap:8px}
+  .card-feat .nstat span{font-size:12.5px;padding:6px 12px;background:var(--white)}
+  .card-feat .nstat span b{font-size:14.5px}
+  .card-feat .done-btn{height:auto;padding:12px 24px;font-size:13px}
+
+  .nhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+  .ncat{display:flex;align-items:center;gap:9px}
+  .idx{font-family:var(--font-mono);font-size:12px;font-weight:400;letter-spacing:.4px;color:var(--gray-500)}
+  .cat{
+    font-size:11.5px;font-weight:400;letter-spacing:.5px;text-transform:uppercase;color:var(--gray-500);
+    border:1px solid var(--line);background:var(--white);
+    border-radius:0;padding:3px 11px;
+  }
+
+  /* 重要程度：信号橙（高） / 暖金底（中） */
+  .lvl{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:11px;font-weight:400;letter-spacing:.5px;text-transform:uppercase;
+    border-radius:0;padding:5px 12px;white-space:nowrap;
+  }
+  .lvl i{width:5px;height:5px;border-radius:0;background:currentColor}
+  .lvl-high{background:var(--m-orange);border:1px solid var(--m-orange);color:var(--white)}
+  .lvl-mid{background:var(--white);border:1px solid rgba(234,88,12,.25);color:#9A3412}
+
+  .ntitle{margin-top:11px;font-size:16.5px;font-weight:700;line-height:1.42;letter-spacing:0;flex-shrink:0}
+  .ntitle a{color:var(--charcoal);text-decoration:none;transition:color .2s}
+  .ntitle a:hover{color:var(--m-orange)}
+
+  .ndesc{
+    margin-top:8px;font-size:12.5px;font-weight:400;line-height:1.55;color:var(--gray-700);
+    max-height:120px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    overflow-wrap:break-word;word-break:break-word;
+  }
+  .ndesc::-webkit-scrollbar{width:4px}
+  .ndesc::-webkit-scrollbar-track{background:transparent}
+  .ndesc::-webkit-scrollbar-thumb{background:rgba(234,88,12,.25);border-radius:40px}
+
+  .nstat{display:flex;flex-wrap:wrap;gap:7px;flex-shrink:0}
+  .nstat span{
+    font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:.2px;
+    color:var(--gray-700);
+    background:var(--white);border:1px solid var(--line);
+    border-radius:0;padding:5px 11px;
+  }
+  .nstat span b{color:var(--ink);font-weight:400}
+
+  .nfoot{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-top:9px;padding-top:8px;flex-shrink:0;
+    border-top:1px solid var(--line);
+  }
+  .src{font-size:12px;font-weight:400;color:var(--gray-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .time{font-family:var(--font-mono);font-size:11px;font-weight:400;color:var(--gray-500);white-space:nowrap}
+
+  /* 次要卡片：紧凑排布，按钮贴右下 */
+  .news:not(.card-feat){padding:16px}
+  .news:not(.card-feat) .ntitle{
+    margin-top:10px;font-size:16px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .news:not(.card-feat) .ndesc{margin-top:6px}
+  .news:not(.card-feat) .nstat{margin-top:8px;gap:6px}
+  .news:not(.card-feat) .nstat span{font-size:10.5px;padding:3px 9px}
+  .news:not(.card-feat) .nfoot{margin-top:7px;padding-top:7px;padding-right:140px}
+  .news:not(.card-feat) .done-btn{
+    position:absolute;right:15px;bottom:12px;
+    width:auto;height:30px;margin-top:0;padding:0 14px;font-size:12px;
+  }
+
+  /* 视图专属排版：仅在桌面端（≥861px）生效，移动端走统一单列 */
+  @media (min-width:861px){
+    .cards[data-view="high"] .news:not(.card-feat){padding:16px}
+    .cards[data-view="high"] .news:not(.card-feat) .ntitle{font-size:20px;-webkit-line-clamp:3}
+    .cards[data-view="high"] .news:not(.card-feat) .ndesc{font-size:14.5px;line-height:1.62}
+    .cards[data-view="high"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0}
+    .cards[data-view="high"] .news:not(.card-feat) .nstat span{font-size:11.5px;padding:5px 11px}
+    .cards[data-view="high"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:156px}
+    .cards[data-view="high"] .news:not(.card-feat) .done-btn{right:22px;bottom:20px;height:36px;padding:0 18px;font-size:13.5px}
+
+    .cards[data-view="mid"] .news:not(.card-feat){padding:16px}
+    .cards[data-view="mid"] .news:not(.card-feat) .ntitle{font-size:24px;letter-spacing:-.4px;-webkit-line-clamp:3}
+    .cards[data-view="mid"] .news:not(.card-feat) .ndesc{font-size:15px;line-height:1.6}
+    .cards[data-view="mid"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0}
+    .cards[data-view="mid"] .news:not(.card-feat) .nstat span{font-size:12px;padding:6px 12px}
+    .cards[data-view="mid"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:0}
+    .cards[data-view="mid"] .news:not(.card-feat) .done-btn{position:static;width:100%;height:42px;margin-top:14px;padding:0;font-size:15px}
+  }
+
+  /* 阅读完成按钮（新拟态暖橙：40px 胶囊 + 双向外阴影立体悬浮） */
+  .done-btn{
+    margin-top:9px;width:100%;height:auto;cursor:pointer;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-family:inherit;font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;
+    color:#EA580C;background-color:#FFF7ED;
+    border-style:solid;border-width:2px;border-color:rgba(255,255,255,.6);
+    border-radius:40px;padding:12px 24px;
+    box-shadow:-4px -2px 16px 0px #ffffff,4px 2px 16px 0px rgba(234,88,12,.15);
+    transition:.2s;
+  }
+  .done-btn:hover{color:#C2410C;background-color:#FFEDD5;box-shadow:-2px -1px 8px 0px #ffffff,2px 1px 8px 0px rgba(234,88,12,.3)}
+  .done-btn:active{box-shadow:none}
+  .done-btn:focus-visible{outline:2px solid #EA580C;outline-offset:2px}
+  .done-btn svg{width:14px;height:14px}
+
+  /* 已完成态：实心橙底白字 + 对勾图标 + 整卡降透明度表示已读 */
+  .news.done{
+    opacity:.6;
+    background:linear-gradient(to left,#fed7aa,#ffedd5);
+    box-shadow:inset 0 0 0 1px rgba(234,88,12,.35);
+  }
+  .card-feat.done{box-shadow:inset 0 0 0 1px rgba(234,88,12,.35),var(--shadow-card)}
+  .news.done .done-btn{
+    color:#FFFFFF;background-color:#EA580C;border-color:rgba(255,255,255,.55);
+    box-shadow:0 4px 10px -2px rgba(234,88,12,.45);
+  }
+  .news.done .done-btn:hover{color:#FFFFFF;background-color:#C2410C}
+  .news.done .done-btn svg{stroke:#FFFFFF}
+  .news.done .ntitle a{color:var(--gray-500)}
+  .news.done .ndesc{color:var(--gray-500)}
+
+  /* 右上角小对勾 */
+  .done-badge{
+    position:absolute;top:-9px;right:-9px;
+    width:26px;height:26px;border-radius:0;
+    display:grid;place-items:center;
+    background:var(--charcoal);color:var(--white);
+    box-shadow:0 0 0 3px var(--bg-page);
+    opacity:0;transform:scale(.5);
+    transition:opacity .25s,transform .32s cubic-bezier(.2,.8,.2,1);
+  }
+  .done-badge svg{width:14px;height:14px}
+  .news.done .done-badge{opacity:1;transform:scale(1)}
+
+  /* ============ 右侧趋势面板（降噪版：去外框 + 极浅左分割线 + 安静的数据排版） ============ */
+  .panel{
+    height:100%;display:flex;flex-direction:column;gap:18px;
+    padding:24px;
+    border:none;
+    border-radius:16px;
+    background:#F9F9FB;
+    box-shadow:none;
+    animation:rise .6s cubic-bezier(.22,.72,.2,1) .1s backwards;
+  }
+  .phead{padding-bottom:0;border-bottom:none}
+  .phead h2{font-family:var(--font-display);font-size:22px;font-weight:400;line-height:1.2;letter-spacing:-.3px;color:var(--ink)}
+  .phead .en{
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:2px;
+    color:#4B5563;text-transform:uppercase;margin-top:6px;
+  }
+
+  /* —— 今日趋势 · 核心数据：超大数字 + TODAY'S SELECTED + 今日资讯浓度渐变条 —— */
+  .hero{display:block;padding:0;background:transparent;border:none}
+  .hero-numwrap{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .hero-numrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .hero .num{
+    font-family:var(--font-sans);
+    font-size:48px;font-weight:700;line-height:1;
+    letter-spacing:-1.5px;color:#1A1A1A;
+  }
+  .hero .unit{
+    font-size:12px;font-weight:400;letter-spacing:1px;
+    color:#9CA3AF;line-height:1.3;text-transform:uppercase;
+  }
+  .density{min-width:0}
+  .density-label{display:flex;align-items:baseline;gap:6px;font-size:12px;font-weight:400;color:#6B7280;line-height:1.4}
+  .hero-pill{
+    display:inline-flex;align-items:center;gap:2px;
+    font-family:var(--font-sans);font-size:12px;font-weight:600;letter-spacing:0;
+    color:#4F46E5;white-space:nowrap;
+  }
+  .hero-pill .arw{font-size:11px;font-weight:700;line-height:1}
+  /* 浓度随筛选结果变色：降为绿 / 持平为灰 */
+  .density-label .hero-pill.down{color:#16A34A}
+  .density-label .hero-pill.flat{color:#6B7280}
+  .density-bar{height:4px;border-radius:2px;background:#E0E7FF;overflow:hidden;margin-top:6px}
+  .density-bar span{
+    display:block;height:100%;width:0;border-radius:2px;
+    background:linear-gradient(90deg,#E0E7FF 0%,#4F46E5 100%);
+    transition:width .55s cubic-bezier(.22,.72,.2,1),background .3s ease;
+  }
+  .density.down .density-bar span{background:linear-gradient(90deg,#D1FAE5,#16A34A)}
+  .density.flat .density-bar span{background:#9CA3AF}
+
+  .block-title{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    font-family:var(--font-sans);font-size:14px;font-weight:600;
+    letter-spacing:0;color:#1F2937;text-transform:none;
+  }
+  .legend{display:flex;gap:10px;font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:0;color:#4B5563;text-transform:none}
+  .legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .legend em{display:inline-block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent}
+  .legend .l-up{border-bottom:6px solid #E5484D}
+  .legend .l-down{border-top:6px solid #16A34A}
+  .legend .l-hint{color:#9CA3AF}
+
+  /* —— 板块分布：纯垂直列表（左分类名 / 右今日数 + 昨日增减箭头），无线条，靠 margin 分隔 —— */
+  .tlist{list-style:none;display:flex;flex-direction:column}
+  .titem{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-left:-8px;margin-right:-8px;margin-bottom:11px;padding:3px 8px;border-radius:8px;cursor:pointer;transition:background .2s ease}
+  .titem:last-child{margin-bottom:0}
+  /* 板块行即筛选器：悬停浅灰 / 选中深灰标签反色 / 零结果禁用（再点当前项取消） */
+  .titem:hover{background:rgba(17,17,17,.04)}
+  .titem:focus-visible{outline:2px solid #4F46E5;outline-offset:1px}
+  .titem[aria-pressed="true"]{background:rgba(17,17,17,.05)}
+  .titem[aria-pressed="true"] .tname{color:#1A1A1A;font-weight:600}
+  .titem[aria-pressed="true"] .tnum{background:#1A1A1A;color:#FFFFFF}
+  .titem[aria-disabled="true"]{opacity:.45;cursor:default}
+  .titem[aria-disabled="true"]:hover{background:transparent}
+  .tleft{min-width:0;display:flex;align-items:center}
+  .tname{font-size:12px;font-weight:400;color:#4B5563;line-height:1.4;letter-spacing:0;overflow-wrap:break-word}
+  .tright{display:flex;align-items:baseline;gap:8px;flex:0 0 auto}
+  .tnum{font-family:var(--font-sans);font-size:12px;font-weight:600;color:#3F3F46;background:#EAEAEA;border-radius:6px;padding:2px 9px;min-width:26px;text-align:center;line-height:1.5}
+  .tdelta{
+    display:inline-flex;align-items:center;justify-content:flex-end;gap:1px;
+    min-width:32px;font-family:var(--font-mono);font-size:12px;font-style:normal;font-weight:400;letter-spacing:.2px;
+  }
+  .tdelta.up{color:#E5484D}
+  .tdelta.down{color:#16A34A}
+  .tdelta.flat{color:#9CA3AF}
+  .tdelta .arw,.tdelta .dl{font-style:normal}
+  .tdelta.flat .dl:empty{display:none}
+
+  /* —— 热点关键词：极简描边标签（透明底 / 1px 深灰边框 / 圆角 6px / 悬停深灰底白字） —— */
+  .kw{display:flex;flex-wrap:wrap;gap:8px}
+  .kw span{
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:0;
+    color:#374151;
+    background:transparent;
+    border:1px solid #4B5563;border-radius:6px;
+    padding:4px 10px;cursor:pointer;max-width:100%;overflow-wrap:anywhere;
+    transition:background .2s,color .2s,border-color .2s,transform .18s cubic-bezier(.2,.8,.2,1);
+  }
+  .kw span:hover{background:#374151;border-color:#374151;color:#FFFFFF}
+  .kw span:active{transform:scale(.94)}
+  .kw span.kwpop{animation:kwPop .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes kwPop{0%{transform:scale(1)}42%{transform:scale(.9)}100%{transform:scale(1)}}
+  .kwcap{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:11px;font-weight:400;letter-spacing:0;color:#4B5563}
+  .kwcap .kc{display:none}
+  .kwcap em{display:inline-block;width:10px;height:10px;border-radius:20px}
+  .kwcap .kd-today{background:#FFF7ED;box-shadow:inset 0 0 0 1px rgba(250,82,15,.28)}
+  .kwcap .kd-yest{background:#F3F4F6}
+  .kwcap .kt{font-style:normal}
+  .kwcap .kmore{margin-left:auto;color:#9CA3AF}
+
+  /* —— 阅读进度：轻量线性条（灰底 / 橙前景 / 6px / 圆角 3px），取代原有圆形进度环 —— */
+  .progress{
+    margin-top:auto;padding-top:16px;
+    border-top:1px solid var(--line-light);
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .pinfo{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .pinfo .pt{font-size:12px;font-weight:400;letter-spacing:0;color:#4B5563}
+  .pbar{height:2px;border-radius:1px;background:#E5E7EB;overflow:hidden}
+  .pbar-fill{
+    display:block;height:100%;width:0;border-radius:1px;
+    background:#4B5563;
+    transition:width .55s cubic-bezier(.22,.72,.2,1);
+  }
+  .pd{font-size:12px;font-weight:400;color:#4B5563;line-height:1.6}
+  .pd b{font-family:var(--font-mono);font-size:12px;font-weight:400;color:#4B5563}
+  .ghost{
+    cursor:pointer;flex:0 0 auto;
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;
+    color:#4B5563;background:transparent;
+    border:1px solid #E5E7EB;border-radius:20px;
+    padding:4px 12px;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .ghost:hover{background:#FFF7ED;border-color:rgba(250,82,15,.35);color:#C2410C}
+  .ghost:focus-visible{outline:2px solid var(--m-orange);outline-offset:2px}
+
+  /* ============ 页脚（Mistral 标志性 Block 渐变收尾带） ============ */
+  .footbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:11px 40px 12px;
+    background:linear-gradient(90deg,#ffd900 0%,#ffe295 20%,#ffa110 42%,#ff8105 62%,#fb6424 82%,#fa520f 100%);
+    border-top:none;
+    font-size:12px;font-weight:400;color:rgba(31,31,31,.85);letter-spacing:.3px;
+  }
+  .footbar a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+  .footbar a:hover{color:var(--white)}
+  .footbar .keys{font-family:var(--font-mono);font-weight:400;letter-spacing:.2px}
+  .footbar .keys b{color:var(--ink);font-weight:400}
+
+  @keyframes rise{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ============================================================
+     移动端（≤860px）：放弃整体缩放，改为真正的流式单列布局
+     ============================================================ */
+  @media (max-width:860px){
+    html,body{height:auto}
+    body{
+      display:block;
+      overflow-x:hidden;overflow-y:auto;
+      background:var(--bg-page);
+    }
+    .stage{
+      width:100%;height:auto;min-height:100vh;
+      border-radius:0;
+      transform:none!important;
+      box-shadow:none;
+      overflow:visible;
+    }
+
+    /* —— 导航：允许换行，避免挤压 —— */
+    .nav{
+      flex:0 0 auto;height:auto;min-height:52px;
+      flex-wrap:wrap;gap:8px 12px;
+      padding:10px 16px;
+    }
+    .window-tag{display:none}
+    .topmeta{gap:12px;margin-left:auto}
+    .nav-cta{padding:8px 12px;font-size:12px}
+
+    /* —— Hero：标题不挤压 —— */
+    .hero-band{padding:20px 16px 18px}
+    .hero-eyebrow{font-size:11px;letter-spacing:1.5px}
+    .hero-band h1{font-size:32px;line-height:1.2;letter-spacing:-.5px;word-break:keep-all}
+    .hero-sub{margin-top:8px;font-size:14px;line-height:1.5}
+    .live{font-size:11px;padding:5px 11px}
+    .hero-tabs{margin-top:12px;gap:6px}
+    .hero-tab{font-size:12px;padding:4px 11px}
+    .hero-head{gap:12px}
+    .hero .num{font-size:40px}
+
+    /* —— 主体：单列，趋势面板落到新闻列表下方 —— */
+    .main{display:block;padding:14px 16px 0}
+    .left{display:block}
+    .right{width:auto;flex:none;margin-top:18px;padding-top:0;border-top:none}
+    .panel{height:auto;padding:20px;gap:16px}
+
+    /* —— 新闻卡片：单列铺满，取消网格定位 —— */
+    .cards{display:block;min-height:0}
+    .col-stack{display:block}
+    .cards .news{margin-bottom:12px}
+    .cards > .col-stack{margin-bottom:0}
+    .cards > .col-stack > .news:last-child{margin-bottom:12px}
+    .cards[data-view="all"] .card-feat,
+    .cards[data-view="all"] .news[data-card="2"],
+    .cards[data-view="all"] .news[data-card="3"],
+    .cards[data-view="high"] .card-feat,
+    .cards[data-view="high"] .news[data-card="2"],
+    .cards[data-view="mid"] .news[data-card="3"]{grid-column:auto;grid-row:auto}
+
+    /* —— 卡片正文：单列下完整展开，不再截断 —— */
+    .card-feat{padding:16px}
+    .card-feat .ntitle{font-size:24px;line-height:1.3;letter-spacing:-.4px}
+    .card-feat .ndesc{font-size:15px;line-height:1.6}
+    .news:not(.card-feat){padding:16px}
+    .news:not(.card-feat) .ntitle{margin-top:10px;font-size:17px;line-height:1.45}
+    .news:not(.card-feat) .ndesc{font-size:13.5px;line-height:1.6;max-height:132px}
+    .news:not(.card-feat) .nstat,
+    .cards[data-view="high"] .news:not(.card-feat) .nstat,
+    .cards[data-view="mid"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0;gap:6px}
+    .news:not(.card-feat) .nstat span,
+    .cards[data-view="high"] .news:not(.card-feat) .nstat span,
+    .cards[data-view="mid"] .news:not(.card-feat) .nstat span{font-size:11px;padding:5px 9px}
+
+    /* —— 按钮区域：统一整行按钮，杜绝绝对定位造成的换行混乱 —— */
+    .news:not(.card-feat) .nfoot,
+    .cards[data-view="high"] .news:not(.card-feat) .nfoot,
+    .cards[data-view="mid"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:0}
+    .news:not(.card-feat) .done-btn,
+    .cards[data-view="high"] .news:not(.card-feat) .done-btn,
+    .cards[data-view="mid"] .news:not(.card-feat) .done-btn{
+      position:static;right:auto;bottom:auto;
+      width:100%;height:auto;margin-top:14px;padding:10px 24px;font-size:13px;
+    }
+    .nfoot{flex-wrap:wrap;gap:4px 10px}
+    .src{white-space:normal}
+
+    /* —— 筛选栏：分行排布，控件铺满不换行 —— */
+    .filterbar{display:block}
+    .filter-label{display:block;margin-bottom:8px}
+    .segmented{display:flex;width:100%}
+    .seg{flex:1;justify-content:center;padding:8px 6px}
+    .filter-count{display:block;margin:8px 0 0;text-align:right}
+
+    /* —— 卡片对勾：避免横向溢出 —— */
+    .done-badge{top:-8px;right:-6px}
+
+    /* —— 页脚：纵向堆叠 —— */
+    .footbar{
+      flex-direction:column;align-items:flex-start;gap:6px;
+      padding:14px 16px 18px;margin-top:14px;
+    }
+  }
+
+  /* ============================================================
+     小屏（≤420px，覆盖 375px）：再收一档边距，标签强制换行不溢出
+     ============================================================ */
+  @media (max-width:420px){
+    .nav{padding:10px 12px}
+    .hero-band{padding:18px 12px 16px}
+    .main{padding:12px 12px 0}
+    .card-feat{padding:14px}
+    .news:not(.card-feat){padding:14px}
+    .ndesc{overflow-wrap:anywhere}
+    .nstat{gap:6px}
+    .nstat span{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+    .chips{flex-wrap:wrap;overflow-x:visible}
+    .chip{white-space:normal;overflow-wrap:anywhere}
+    .nfoot{gap:4px 8px}
+    .src{font-size:11.5px}
+    .titem{gap:8px;margin-bottom:10px;padding:2px 6px;margin-left:-6px;margin-right:-6px}
+    .tname{font-size:12px}
+    .kw{gap:7px}
+    .kw span{padding:3px 8px}
+    .kwcap{gap:10px}
+    .kwcap .kmore{display:none}
+    .hero-tab{font-size:11.5px;padding:4px 9px;gap:5px}
+    .tbadge{min-width:17px;height:17px;padding:0 5px;font-size:10px}
+    .hero .num{font-size:34px}
+    .hero .unit{font-size:11px}
+    .footbar{padding:14px 12px 18px}
+  }
+
+  /* 顶部滚动进度条：2px 橙色渐变，随页面滚动 0% → 100% */
+  #scrollProgress{
+    position:fixed;top:0;left:0;height:2px;width:0;
+    background:linear-gradient(90deg,#ffa110,#fa520f);
+    z-index:9999;pointer-events:none;
+    transition:width .15s linear;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body data-page-node-id="ekU47wXcg6UiIev3xNGnuj">
+
+<div id="scrollProgress" aria-hidden="true"></div>
+
+<div class="stage" id="stage" data-page-node-id="HJnGF0TUZXM1DPcJmMNTJZ">
+
+  <!-- ============ 导航栏 ============ -->
+  <header class="nav" data-page-node-id="Ea2aBndzOD4nyBt5r05mJN">
+    <div class="brand" data-page-node-id="4wzYyGcCgHuP5uH60sK50P">
+      <div class="logo" data-page-node-id="juiONbF4dL5BTzjGVf45E5">AI</div>
+      <div class="titles" data-page-node-id="cGewS2pE2nIqYyESm6kEg0">
+        <span class="nav-name">AI 行业日报</span>
+        <div class="sub" data-page-node-id="LOt6PJHOcbJhFg3hgRgLng">AI Industry Daily</div>
+      </div>
+    </div>
+    <div class="topmeta" data-page-node-id="TnUmz6xa3jbOsP0I9a3GAu">
+      <span class="window-tag" data-page-node-id="9HbPuNzRV2kz57H9Jp2NBh">数据窗口 <b data-page-node-id="ZSu3TFTZP8V4dw9GvaAbBC">09-15 08:00 → 09-16 08:00</b>（北京时间）</span>
+    </div>
+  </header>
+
+  <!-- ============ 标题区 ============ -->
+  <section class="hero-band">
+    <div class="hero-eyebrow">2026 / 09 / 16 · 星期三 · AI INDUSTRY DAILY</div>
+    <div class="hero-head">
+      <h1 data-page-node-id="vY7r0bAOTjHHBJyda1zHYP">AI 行业<span class="accent">日报</span></h1>
+      <span class="live" data-page-node-id="WhLSD8GN4cFJpTeSNLeUKu"><i data-page-node-id="B9gro87HSA9uDjOvn5namS"></i>LIVE · 今日 13 条精选</span>
+    </div>
+    <p class="hero-sub">3分钟，追上今天所有AI大事。</p>
+    <div class="hero-tabs" id="catTabs">
+      <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
+      <button class="hero-tab active" type="button" data-scope="all" aria-pressed="true">全部<b class="tbadge">13</b><span class="tunit">条</span></button>
+      <button class="hero-tab" type="button" data-scope="featured" aria-pressed="false">精选<b class="tbadge">3</b><span class="tunit">条</span></button>
+      <button class="hero-tab" type="button" data-scope="模型发布" aria-pressed="false">模型发布<b class="tbadge">3</b></button>
+      <button class="hero-tab" type="button" data-scope="产品发布" aria-pressed="false">产品更新<b class="tbadge">2</b></button>
+      <button class="hero-tab" type="button" data-scope="行业动态" aria-pressed="false">行业动态<b class="tbadge">1</b></button>
+      <button class="hero-tab" type="button" data-scope="观点技巧" aria-pressed="false">观点技巧<b class="tbadge">7</b></button>
+    </div>
+  </section>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main" data-page-node-id="1ihyr9r3ZqjVDhYQGlA8TE">
+
+    <div class="left" data-page-node-id="2Bi3GJc51puyldOIf8xFd6">
+
+      <!-- 今日重点摘要 -->
+      <section class="summary" data-page-node-id="SKbSqx3NdOIb07yZ7VBH8Q">
+        <div class="sec-head" data-page-node-id="1SdvZY3J2Btper8Fi6CyXN">
+          <span class="dot" data-page-node-id="y4vG5U4b6kJdDWBJQq3nKc"></span>
+          <h2 data-page-node-id="rRAPocIZcWSQJxkTSeqPCV">今日重点摘要</h2>
+          <span class="en" data-page-node-id="1uy6jHOPkNHWNT5lD671mb">TODAY'S HIGHLIGHTS</span>
+        </div>
+        <ul class="sumlist" data-page-node-id="Ra2qNQQv0fF4ID0vEPv7pb">
+          <li>语音与多模态：Google DeepMind 与阶跃星辰同日发布语音大模型，主打近实时语音对话场景。</li>
+          <li data-page-node-id="bcMZCihjLQCJ4fo0mEuAIz"><b>行业自我约束：</b>Anthropic 与 OpenAI 罕见同声呼吁协调放缓前沿 AI 开发。</li>
+          <li data-page-node-id="Z8f8nWPi5kjYygsoBrbWRH"><b>降本增效：</b>Perplexity 以自研数据库 CobbleDB 替换 AWS DynamoDB，年省最高一亿美元。</li>
+        </ul>
+        <div class="chips" data-page-node-id="ucX6CZzdrsEBqtSPCTJAj6">
+          <span class="chip" data-page-node-id="ENJsIhfvKgc8ui8nZVAxpe">AIHOT 精选 <b data-page-node-id="i5spbDXxhE9039txbXua0G">13</b> 条</span>
+          <span class="chip" data-page-node-id="MqrUYRHKE4Pi45Rr6FJnlD">热点事件 <b data-page-node-id="xvZXbnsjeq3QnirSRoa3Vy">10</b> 个</span>
+          <span class="chip up" data-page-node-id="67MdrHy4gT7nZwVPVMa10i">信息量较昨日 <b data-page-node-id="6rUwLvWqsy9nwIEhIGA9iA">▲ 44%</b></span>
+        </div>
+      </section>
+
+      <!-- 重要程度筛选 -->
+      <div class="filterbar">
+        <span class="filter-label">FILTER BY PRIORITY</span>
+        <div class="segmented" id="segmented" role="group" aria-label="按重要程度筛选新闻">
+          <button class="seg active" type="button" data-filter="all" aria-pressed="true">全部<b>3</b></button>
+          <button class="seg" type="button" data-filter="high" aria-pressed="false">高优先级<b>2</b></button>
+          <button class="seg" type="button" data-filter="mid" aria-pressed="false">中优先级<b>1</b></button>
+        </div>
+        <span class="filter-count" id="filterCount">显示 3 / 3 条</span>
+      </div>
+
+      <!-- 三条新闻卡片 -->
+      <div class="cards" data-view="all" data-page-node-id="JBv6qmdXTkBLQe0Rgi9M2I">
+
+        <!-- 卡片 1 -->
+        <article class="news card-feat" data-card="1" data-lvl="high" data-cat="模型发布" style="animation-delay:.10s" data-page-node-id="pCIoY1jEfFVkJjVEBsb86U">
+          <span class="done-badge" aria-hidden="true" data-page-node-id="g9AOoewrUzdLMRIB5qrpQ6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="lTwRDYuAxsKWSjwOo3Mx46"><path d="M20 6 9 17l-5-5" data-page-node-id="hi2TlyPpGJcmaXeaz32XBL"/></svg>
+          </span>
+          <div class="nhead" data-page-node-id="1QJKS77xgIaN28FcNpLHmv">
+            <div class="ncat" data-page-node-id="Q9sPXCbiDakReArABkGFfp"><span class="idx" data-page-node-id="DZIR5DIuqrjEOji01TG4Km">01</span><span class="cat" data-page-node-id="lKMAQU8GYJ8irhREo6w9KS">模型发布</span></div>
+            <span class="lvl lvl-high" data-page-node-id="2Lsr4r7XnH5pp7A7c4xGyv"><i data-page-node-id="A071DZggLic6wK8wcGoGEY"></i>重要程度 · 高</span>
+          </div>
+          <h3 class="ntitle" data-page-node-id="XFvwRm1Tlnm2ZBXpZdwkEy">
+            <a href="https://aihot.news/items/cmu2xqfxz02zhroc1hxuzi6jm" target="_blank" rel="noopener" data-page-node-id="gj0m1SQskDIDP7jp5NPK9D">
+              Google DeepMind 发布 Gemini 3.8 Live 与 3.8 Live Extended Thinking
+            </a>
+          </h3>
+          <p class="ndesc" data-page-node-id="PRIALZcvZip16JsiWBlOtb">
+            两款模型定位分工：Gemini 3.8 Live 面向近实时语音对话，Extended Thinking 侧重复杂任务执行，主打语音智能体场景。官方同步给出多项基准数字，可用于评估推理、成本与工具调用能力。
+          </p>
+          <div class="nstat" data-page-node-id="ZBCDVjgn0scPOBg7i7GdmA">
+            <span data-page-node-id="DP1cGWkOGcKSzIvgwKAZos">热点榜第 <b data-page-node-id="zr7jJz186VrS5gG2x7iv4e">4</b> 位</span>
+            <span data-page-node-id="ih274xQSWYUG0tY5hxBaHr"><b data-page-node-id="EkhvWAyqvcJqFZnI8GDF8j">14</b> 个信源收录</span>
+          </div>
+          <div class="nfoot" data-page-node-id="3Ls9RDDevJmxXtXwGUFuah">
+            <span class="src" data-page-node-id="tLNhOSURRl6po8ZWrELVUK">Google DeepMind：Blog</span>
+            <span class="time" data-page-node-id="uia4wCwlpWqg1Ig9JTdgAF">09-16 01:05</span>
+          </div>
+          <button class="done-btn" type="button" data-page-node-id="JuFdCxARQTewohKdIaiVET">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="ZoJal4Ohy6yzN4KwWuXlnC"><path d="M20 6 9 17l-5-5" data-page-node-id="Qa40GXIA9bWOb3DVnADpFT"/></svg>
+            <span data-page-node-id="E3WECKtijeOYKms4leiWc5">标记阅读完成</span>
+          </button>
+        </article>
+
+        <div class="col-stack">
+
+        <!-- 卡片 2 -->
+        <article class="news" data-card="2" data-lvl="high" data-cat="产品发布" style="animation-delay:.20s" data-page-node-id="XLvsoU24A8Ja8PcxyPQGza">
+          <span class="done-badge" aria-hidden="true" data-page-node-id="2fhHeedrCOhph0adAxHt45">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="KTZbZu69LVA5jZyL0Ecy0f"><path d="M20 6 9 17l-5-5" data-page-node-id="D2fhzSvwPfaICfP7Qh8RdF"/></svg>
+          </span>
+          <div class="nhead" data-page-node-id="ol6pF35ataUSUheUcLoO1H">
+            <div class="ncat" data-page-node-id="PpdpWfXXkU1fNtvo9MzcUz"><span class="idx" data-page-node-id="dwF8sGAdFgSYkaxm6QULMY">02</span><span class="cat" data-page-node-id="LGSozh3CHnSk2yRD2JXtG2">产品发布</span></div>
+            <span class="lvl lvl-high" data-page-node-id="1KNRckyPLxs0q6vT1oRF2g"><i data-page-node-id="V6g7eRQMIRzfGoi9W3Gdsq"></i>重要程度 · 高</span>
+          </div>
+          <h3 class="ntitle" data-page-node-id="W2xYX9iHlMycyV6Sk5DQMM">
+            <a href="https://aihot.news/items/cmu1ju3b00pmgrocnrgwe6e9e" target="_blank" rel="noopener" data-page-node-id="ohaxU8LUGS08insqjhlubw">
+              Apple 发布新一代 Apple Intelligence，Siri AI 正式以测试版上线
+            </a>
+          </h3>
+          <p class="ndesc" data-page-node-id="VkyzBX7BoXxHFrfnEJz4Bb">
+            官方称这是更强大、更个性化的智能助理，Siri AI 以测试版面向用户开放；同期还发布 iOS 27、iPadOS 27、macOS 27 等系统更新，把新能力推向全平台。
+          </p>
+          <div class="nstat" data-page-node-id="jauPT9bkq3Ew9kpWgfhelV">
+            <span data-page-node-id="TwwrNHrLRxdWUhVQnXbhz8">热点榜第 <b data-page-node-id="HmNFuTvBKMvpyWKXAFRpnC">1</b> 位</span>
+            <span data-page-node-id="1bej79IhLh0mcuAMR0y2qM"><b data-page-node-id="NXHW6jv6pVYWsNLDSlLA7A">5</b> 个信源收录</span>
+            <span data-page-node-id="lrculoLXzEU4PA9anL8YiV">iOS 27 同步发布</span>
+          </div>
+          <div class="nfoot" data-page-node-id="qhumspYmfDzVzEUGnFhzzF">
+            <span class="src" data-page-node-id="MWhGHJlfHjKSDoSqlDPqjH">Apple：Newsroom</span>
+            <span class="time" data-page-node-id="HL1dK1HGR3jtx8uMQrGWfe">AIHOT 收录 09-16 08:06</span>
+          </div>
+          <button class="done-btn" type="button" data-page-node-id="Uh34CSi3VHts02xH0i7L8a">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="GoZGMCVCJw9D1zBFBHHTe5"><path d="M20 6 9 17l-5-5" data-page-node-id="BJmdB6zXm4uathnQX6eWcp"/></svg>
+            <span data-page-node-id="PW5LWkXZcuzCIcDe812bit">标记阅读完成</span>
+          </button>
+        </article>
+
+        <!-- 卡片 3 -->
+        <article class="news" data-card="3" data-lvl="mid" data-cat="行业动态" style="animation-delay:.30s" data-page-node-id="W3tMy1aoVQSl3faLa4hWho">
+          <span class="done-badge" aria-hidden="true" data-page-node-id="uBTK2ZvyHosK1M2CGgTEBQ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="80dkLjB2XFzLBVehR0s8fe"><path d="M20 6 9 17l-5-5" data-page-node-id="yWLsxPtAJUSRToUDtDNXZH"/></svg>
+          </span>
+          <div class="nhead" data-page-node-id="x7Nl444bu8Y47swdaW1e0G">
+            <div class="ncat" data-page-node-id="eC0OFTa5pEa4GmY0gwMf15"><span class="idx" data-page-node-id="HCEY1EYTHHXegyiOrAJRAV">03</span><span class="cat" data-page-node-id="e0bHSqoALfDjODWoZJDKV8">行业动态</span></div>
+            <span class="lvl lvl-mid" data-page-node-id="cDY31I8mw3jh9Q6nJTtfJZ"><i data-page-node-id="o6LOBco2PCEveqkmecHYKD"></i>重要程度 · 中</span>
+          </div>
+          <h3 class="ntitle" data-page-node-id="BBWlhM7ZIgQ9GkYc9G8tqc">
+            <a href="https://aihot.news/items/cmu352k2908t9rosaotpsx42c" target="_blank" rel="noopener" data-page-node-id="RbmlJoC08DAFZZRjumHDuJ">
+              Perplexity 自研 CobbleDB 替代 AWS DynamoDB，每年最多可节省一亿美元
+            </a>
+          </h3>
+          <p class="ndesc" data-page-node-id="y7ZEcPAjs4ljCM2N2xfnNP">
+            CEO Aravind Srinivas 宣布以自研键值数据库 CobbleDB 替换 AWS DynamoDB，用于快速网页内容抓取。项目由 2 名工程师与数百个持续运行的 Computer 智能体在两个月内完成核心基础设施。
+          </p>
+          <div class="nstat" data-page-node-id="7hMMiwRdiWmkX3R1w6lyMZ">
+            <span data-page-node-id="cAqkC0oPJ09XkkYHvpaKod">读取延迟 P50 <b data-page-node-id="G9ykm6CsjxJRWRrHCGLYUA">31.4ms → 5.6ms</b></span>
+            <span data-page-node-id="vF4zHkUh02hcdQFkpuc1rT">年省最高 <b data-page-node-id="kfkYEt993kagJ7vObZ7N8D">1 亿美元</b></span>
+          </div>
+          <div class="nfoot" data-page-node-id="GMsmAV56bQFbSKKfsCfNQg">
+            <span class="src" data-page-node-id="KRAGpXXKpElUt2zHEyAsTd">X：Aravind Srinivas</span>
+            <span class="time" data-page-node-id="KPTacBPkeAI0FJjsYZ6c9k">09-16 04:23</span>
+          </div>
+          <button class="done-btn" type="button" data-page-node-id="EHCXzzH9eeTLXljyiPZVsl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="DOZ7vxBa2pYWeUOWeARBvP"><path d="M20 6 9 17l-5-5" data-page-node-id="lxLOsDfJLI4dyUHkrDHRas"/></svg>
+            <span data-page-node-id="d9iUDjc98Wm0lMRUUi7voO">标记阅读完成</span>
+          </button>
+        </article>
+        </div>
+
+        <div class="cards-empty" id="cardsEmpty" hidden>
+          <p class="ce-t">当前筛选组合下暂无精读卡片，试试放宽条件或回到全部精选。</p>
+          <button class="ce-btn" type="button" id="emptyReset">回到全部精选</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ 右侧趋势面板 ============ -->
+    <aside class="right" data-page-node-id="pwVAmKRdKo0OCsVhUjjNZ8">
+      <div class="panel" data-page-node-id="KNJsiTyGtm7oZXmUaz4kUr">
+        <div class="phead" data-page-node-id="ZJMNN8QT1NCTBgPN8fHbq8">
+          <div data-page-node-id="aFZy2sG9zuWUbzlRVN1Ou5">
+            <h2 data-page-node-id="CPpKqD9Rs7PMvYAT17ND12">今日趋势</h2>
+            <div class="en" data-page-node-id="YiFQGBOlCEsQ8LiBpgyEcX">TODAY'S TREND</div>
+          </div>
+        </div>
+
+        <div class="hero" data-page-node-id="otg5Img00BxuDmRg6aCOKM">
+          <div class="hero-numwrap" data-page-node-id="BHnaBikreQtxtydu4KCcv1">
+            <div class="hero-numrow">
+              <div id="heroNum" class="num" data-page-node-id="qnfodBoSloXw2ryvHjRpHB">13</div>
+              <span class="unit">TODAY'S SELECTED</span>
+            </div>
+            <div class="density" id="densityBox">
+              <div class="density-label">今日资讯浓度 <span id="heroPill" class="hero-pill" data-page-node-id="Kn3MYAO1DVQVuAdcnzrAiH"><span class="arw">↑</span> 44%</span></div>
+              <div class="density-bar"><span id="densityFill" style="width:44%"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div data-page-node-id="Zrc4cN3mqwBrRXyPSSEujx">
+          <div class="block-title" data-page-node-id="bLQDf3hkxvhwGCDTSkayWE">
+            <span data-page-node-id="WvfE8lhoE5GxJKl9DVV66k">板块分布</span>
+            <span class="legend" data-page-node-id="KkZkWsGrJZZVgSIzeEBL9B">
+              <span data-page-node-id="0qezLTocWZ1HUpLor1kgW8"><em class="l-up" data-page-node-id="ftirrGZUXxXUKNCZYVSPqA"></em>较昨日增</span>
+              <span data-page-node-id="NR76ISECHnzsilrSElF5x5"><em class="l-down" data-page-node-id="lrGIhqR4J9i1MEgP3FMqD8"></em>减</span>
+              <span class="l-hint">点击行可筛选</span>
+            </span>
+          </div>
+          <ul class="tlist" style="margin-top:12px" data-page-node-id="DSUiFgd79ba1jnulJFEsrH">
+            <li class="titem" data-board="模型发布" role="button" tabindex="0" aria-pressed="false" data-page-node-id="E8sqPUNxpHRzUf95Hj8ype">
+              <span class="tleft" data-page-node-id="HL9Pb5i56GktatqfEY9Vt9"><span class="tname" data-page-node-id="JjL3HYxj9QBRNYzCDaB2V2">模型发布/更新</span></span>
+              <span class="tright" data-page-node-id="7qFAHTNcdVIktlacKn8yd4"><b class="tnum" data-page-node-id="H41B67PgLJANimKWGNBRAE">3</b><em class="tdelta up" data-page-node-id="z2n2UnQYABUMOxGEwoO9J8"><span class="arw" data-page-node-id="9fwThM90QR886illX7GmRm">↑</span><span class="dl" data-page-node-id="0z8UEw5pDICaDertDR38td">1</span></em></span>
+            </li>
+            <li class="titem" data-board="产品发布" role="button" tabindex="0" aria-pressed="false" data-page-node-id="KqVVH44Lhj9HZhSaBZzaAW">
+              <span class="tleft" data-page-node-id="l8XlYgZpFdnaVDufy98oP8"><span class="tname" data-page-node-id="dAKNgVq8kJ0oZL79AnpFar">产品发布/更新</span></span>
+              <span class="tright" data-page-node-id="udI14yVoNgQFIZqrtZzHaX"><b class="tnum" data-page-node-id="YcZiHaV5R3Ipb77iMUKa1Y">2</b><em class="tdelta up" data-page-node-id="SlTl5aIEGtXyqbrN7A5gGH"><span class="arw" data-page-node-id="Ni7Nf7YEhkKQ3G3pLCPD1W">↑</span><span class="dl" data-page-node-id="rZG25vIEQDDMhcaklK5Nmx">1</span></em></span>
+            </li>
+            <li class="titem" data-board="行业动态" role="button" tabindex="0" aria-pressed="false" data-page-node-id="USgHMYNYxlgYPZLg3VGoES">
+              <span class="tleft" data-page-node-id="TVW970kjjxclwaBpCEKSmd"><span class="tname" data-page-node-id="GQy4VlrCxtyUoXF6DtT5V0">行业动态</span></span>
+              <span class="tright" data-page-node-id="qxVQ3ZEweGMfVvI3QVZGFV"><b class="tnum" data-page-node-id="0csa13aolzGFla9BOvFy5E">1</b><em class="tdelta flat" data-page-node-id="iLcWjtn5XCkz861N9aBO6B"><span class="arw" data-page-node-id="82FoS0U3STfGsrhpEre245">—</span><span class="dl" data-page-node-id="Roy25x2q1cfBHqPEuCKJuL"></span></em></span>
+            </li>
+            <li class="titem" data-board="观点技巧" role="button" tabindex="0" aria-pressed="false" data-page-node-id="MqpaFqdxFzws4iGAZBFvWl">
+              <span class="tleft" data-page-node-id="HibWFfq9ObmqpPizs1OG8f"><span class="tname" data-page-node-id="ttXI3QNAO1aKezKJywRQGc">技巧与观点</span></span>
+              <span class="tright" data-page-node-id="CDbftzslvTupx96vEgqIiL"><b class="tnum" data-page-node-id="WgbYPWvmlvxrLibzJ0GdHp">7</b><em class="tdelta up" data-page-node-id="F5RqDqqjloABizgtlfWk8U"><span class="arw" data-page-node-id="BEyASPhBqBlOrHx2NEZRnv">↑</span><span class="dl" data-page-node-id="i8ECa0NQe5x7ctQrbg2Gzl">3</span></em></span>
+            </li>
+            <li class="titem" data-board="论文研究" role="button" aria-disabled="true" data-page-node-id="2vgtwaqc5ZMj7F4gtFdBAX">
+              <span class="tleft" data-page-node-id="AqUOgF2jHPgt7RGrb34xD3"><span class="tname" data-page-node-id="bFkL4r8P7iA94SxvGV23ID">论文研究</span></span>
+              <span class="tright" data-page-node-id="vVXZtgl1qyxNVDMNOWHqfG"><b class="tnum" data-page-node-id="DOOwPR1RSMu8rqJTYozrgj">0</b><em class="tdelta down" data-page-node-id="7U2AKXYm42lkTBpY1tTeZy"><span class="arw" data-page-node-id="cmZzri9ooNLg4G1NofzJM7">↓</span><span class="dl" data-page-node-id="pQ8j7fdS5477Q0rbelANaS">1</span></em></span>
+            </li>
+          </ul>
+        </div>
+
+        <div data-page-node-id="EoEHN12iHp13zCPUHIcnHB">
+          <div class="block-title" data-page-node-id="vcHeIVI4o0uA7SUQBbEi0O"><span data-page-node-id="1JAqKAfGDaPCS7mcNCUCiU">热点关键词</span></div>
+          <div class="kw" style="margin-top:12px" data-page-node-id="3QgcVy6wpZTydJxWk8FHCt">
+            <span class="hot" data-page-node-id="GiKGIoE7iWArRMRgNPFDcY">Siri AI</span>
+            <span class="hot" data-page-node-id="PIISfhTnsyKlNmre9Q2z1v">放缓前沿开发</span>
+            <span class="hot" data-page-node-id="rZSRnXrvSRnw311RbqxBlP">Gemini 3.8 Live</span>
+            <span data-page-node-id="33Sh1LNGAjBH93usvhl5W0">Codex 智能体</span>
+            <span data-page-node-id="pa63bmQ770l2kzpmyjPtiV">StepAudio 3</span>
+            <span data-page-node-id="5T1HezopOHERLkwoSrfnKP">DeepSeek IPO</span>
+            <span data-page-node-id="jGCwmwOILFmhjrhyWiBPB8">Vidu S2</span>
+            <span data-page-node-id="bWCI40We7suHgAQdtdhwxz">CobbleDB</span>
+          </div>
+          <div class="kwcap" data-page-node-id="jyGRyDJLVOSSJnJm56RD0V">
+            <span class="kc" data-page-node-id="coNITb6rLaVeKipTxHtUxF"><em class="kdot kd-today" data-page-node-id="53HxSJS2X2wzcDGbRS2PvC"></em><i class="kt" data-page-node-id="GJbnRpJqvYXHJr6VAjAssD">今日高热</i></span>
+            <span class="kc" data-page-node-id="Aw3rxGhQLhGUSyLMsFPIsF"><em class="kdot kd-yest" data-page-node-id="xjxqyuZcgy0FDeZDWFxD3B"></em><i class="kt" data-page-node-id="54qc4T0OKlivH00UCxpqya">常态关注</i></span>
+            <span class="kmore" data-page-node-id="oBV50TDRcMPu0iQyYmw5yj">共 8 个</span>
+          </div>
+        </div>
+
+        <div class="progress" data-page-node-id="tUeFyMGUIHaDDEQuJZj0J0">
+          <div class="pinfo" data-page-node-id="BKYRbncEhHbB8x8GGhOvwN">
+            <div class="pt" data-page-node-id="qOJz42HFtXQ8uV3IDgBDmA">今日阅读进度</div>
+            <button class="ghost" id="resetBtn" type="button" data-page-node-id="VrjZHmXfmb27PHljsuRdbE">重置进度</button>
+          </div>
+          <div class="pbar" data-page-node-id="SGkLKUWcmneSWvccyBSNQN"><span class="pbar-fill" id="readFill" data-page-node-id="0fWrcjVhniqbXx9EmTtkxu"></span></div>
+          <div class="pd" data-page-node-id="z5lredz891eOcCx6Z50uzh"><span data-page-node-id="B4Cdjl2o7YUy4FvegfIetD"><b id="readCount" data-page-node-id="Q8zCtHICz1a3l2Y5Nv8aNK">0</b><span data-page-node-id="Dl93i4YvCEMZp01QqpOJgg"> / 3 篇已读</span></span></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ 页脚 ============ -->
+  <footer class="footbar" data-page-node-id="N1Aq3hBmbdHqBSaumuAwvh">
+    <span data-page-node-id="ZNcc929ubDWGsT35Slf5IM">数据来源 <a href="https://aihot.news" target="_blank" rel="noopener" data-page-node-id="KPlrYbxDoigimXed7QsxKC">AIHOT</a> · 资讯版权归原发布方所有 · 本页面为个人非商业演示用途</span>
+    <span class="keys" data-page-node-id="hePsayT3DvCw254f5Yg4I4">快捷操作：按 <b data-page-node-id="gdbGlmZHjRRinoCEDx21RS">1</b> / <b data-page-node-id="O0YRbd3WgB9CZjmDBBF5aK">2</b> / <b data-page-node-id="EFRDvrbGD85w4cI0iezsiy">3</b> 标记对应卡片已读（被筛选隐藏的卡片不响应快捷键）</span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- 1. 16:9 等比缩放，适配任意窗口 / 录屏分辨率 ---------- */
+  var stage = document.getElementById('stage');
+  var NARROW = 860; // 断点与样式表的媒体查询保持一致
+
+  function isNarrow() { return window.innerWidth <= NARROW; }
+
+  function fitStage() {
+    // 手机 / 窄屏：走 CSS 流式单列布局，清除整体缩放
+    if (isNarrow()) {
+      stage.style.transform = '';
+      return;
+    }
+    var s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    // 留一点边距，避免贴边
+    s = Math.min(s, 1.6);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fitStage);
+  fitStage();
+
+  /* ---------- 2. 阅读完成 状态管理 ---------- */
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.news'));
+  var readFill = document.getElementById('readFill');
+  var readCount = document.getElementById('readCount');
+  var resetBtn = document.getElementById('resetBtn');
+
+  var state = cards.map(function () { return false; });
+
+  function render() {
+    var done = state.filter(Boolean).length;
+    var total = state.length;              // 阅读进度始终以「今日全部 3 条」为分母，
+    var pct = Math.round((done / total) * 100); // 不受筛选影响（筛选只改变可见性）
+
+    readFill.style.width = pct + '%';
+    readCount.textContent = done;
+
+    cards.forEach(function (card, i) {
+      var isDone = state[i];
+      card.classList.toggle('done', isDone);
+      var btn = card.querySelector('.done-btn span');
+      btn.textContent = isDone ? '已完成' : '标记阅读完成';
+    });
+  }
+
+  function toggle(i) {
+    if (i < 0 || i >= cards.length) return;
+    state[i] = !state[i];
+    render();
+  }
+
+  cards.forEach(function (card, i) {
+    card.querySelector('.done-btn').addEventListener('click', function () {
+      toggle(i);
+    });
+  });
+
+  resetBtn.addEventListener('click', function () {
+    state = state.map(function () { return false; });
+    render();
+  });
+
+  /* ---------- 3. 筛选：统一 filterState 状态树 + renderList 单一渲染出口 ---------- */
+  var segs = Array.prototype.slice.call(document.querySelectorAll('.seg'));
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.hero-tab'));
+  var cardsWrap = document.querySelector('.cards');
+  var filterCount = document.getElementById('filterCount');
+  var cardsEmpty = document.getElementById('cardsEmpty');
+  var emptyReset = document.getElementById('emptyReset');
+  var titems = Array.prototype.slice.call(document.querySelectorAll('.titem[data-board]'));
+  var heroNum = document.getElementById('heroNum');
+  var heroPill = document.getElementById('heroPill');
+  var densityFill = document.getElementById('densityFill');
+  var densityBox = document.getElementById('densityBox');
+
+  /* 3.0 今日数据模型：13 条精选的板块 / 重要程度 / 精读标记 / 昨日在榜。
+     与右侧面板静态统计一一对应（模型发布3 产品发布2 行业动态1 观点技巧7 论文研究0；昨日共 9 条 -> ↑44%）。
+     ghost 条目今日已不在榜，仅参与「昨日」基数。 */
+  var NEWS = [
+    { cat:'模型发布', lvl:'high', featured:true,  yest:0 },   /* Gemini 3.8 Live（精读卡 1） */
+    { cat:'模型发布', lvl:'mid',  featured:false, yest:1 },   /* StepAudio 3 */
+    { cat:'模型发布', lvl:'low',  featured:false, yest:1 },
+    { cat:'产品发布', lvl:'high', featured:true,  yest:0 },   /* Apple Intelligence（精读卡 2） */
+    { cat:'产品发布', lvl:'mid',  featured:false, yest:1 },   /* Vidu S2 */
+    { cat:'行业动态', lvl:'mid',  featured:true,  yest:1 },   /* CobbleDB（精读卡 3） */
+    { cat:'观点技巧', lvl:'high', featured:false, yest:1 },   /* 呼吁协调放缓前沿开发 */
+    { cat:'观点技巧', lvl:'mid',  featured:false, yest:1 },   /* DeepSeek IPO */
+    { cat:'观点技巧', lvl:'mid',  featured:false, yest:1 },   /* Codex 智能体 */
+    { cat:'观点技巧', lvl:'low',  featured:false, yest:1 },
+    { cat:'观点技巧', lvl:'low',  featured:false, yest:0 },
+    { cat:'观点技巧', lvl:'low',  featured:false, yest:0 },
+    { cat:'观点技巧', lvl:'low',  featured:false, yest:0 },
+    { cat:'论文研究', lvl:'low',  featured:false, yest:1, ghost:true }
+  ];
+
+  /* 3.0b 唯一事实来源：三个单选维度之间逻辑与（AND）
+     featured -> 只看精读精选；board -> 板块；lvl -> 重要程度 */
+  var filterState = { featured:false, board:'all', lvl:'all' };
+
+  function matchNews(pred) {
+    var n = 0;
+    NEWS.forEach(function (it) { if (!it.ghost && pred(it)) n++; });
+    return n;
+  }
+  function yestNews(pred) {
+    var n = 0;
+    NEWS.forEach(function (it) { if (pred(it) && it.yest) n++; });
+    return n;
+  }
+  function lvlOk(it) { return filterState.lvl === 'all' || it.lvl === filterState.lvl; }
+  function inSlice(it) { return lvlOk(it) && (!filterState.featured || it.featured); }
+  function boardOk(cat) { return filterState.board === 'all' || cat === filterState.board; }
+
+  /* 3.1 滑动指示器：高亮块以 transition:transform .3s 平滑滑到当前标签位置 */
+  function makeIndicator(wrap, ind, sel) {
+    if (!wrap || !ind) return function () {};
+    return function (immediate) {
+      var btn = wrap.querySelector(sel);
+      if (!btn) return;
+      var w = btn.offsetWidth + 'px';
+      var h = btn.offsetHeight + 'px';
+      var t = 'translate(' + btn.offsetLeft + 'px,' + btn.offsetTop + 'px)';
+      if (immediate) {
+        ind.style.transition = 'none';
+        ind.style.width = w;
+        ind.style.height = h;
+        ind.style.transform = t;
+        void ind.offsetWidth;
+        ind.style.transition = '';
+      } else {
+        ind.style.width = w;
+        ind.style.height = h;
+        ind.style.transform = t;
+      }
+      ind.classList.add('ready');
+    };
+  }
+  var placeCat = makeIndicator(document.getElementById('catTabs'), document.getElementById('tabInd'), '.hero-tab.active');
+  function placeAll(immediate) { placeCat(immediate); }
+
+  /* 3.2 renderList：主列表唯一渲染出口（可见性 / 布局 / 空态 / 计数 / 分段徽章） */
+  function renderList() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var match = boardOk(card.getAttribute('data-cat'))
+        && (filterState.lvl === 'all' || card.getAttribute('data-lvl') === filterState.lvl);
+      card.hidden = !match;
+      if (match) shown += 1;
+    });
+    cardsWrap.setAttribute('data-view', filterState.lvl);
+    cardsWrap.classList.toggle('cat-narrow', filterState.board !== 'all');
+    cardsEmpty.hidden = shown > 0;
+    filterCount.textContent = '显示 ' + shown + ' / ' + cards.length + ' 条';
+    segs.forEach(function (b) {
+      var L = b.getAttribute('data-filter');
+      var n = cards.filter(function (c) {
+        return boardOk(c.getAttribute('data-cat'))
+          && (L === 'all' || c.getAttribute('data-lvl') === L);
+      }).length;
+      b.querySelector('b').textContent = n;
+      var on = filterState.lvl === L;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  /* 3.3 renderPanel：右侧面板数字随筛选结果动态重算（今日条数 vs 昨日基数） */
+  function renderPanel() {
+    var t = matchNews(function (it) { return inSlice(it) && boardOk(it.cat); });
+    var y = yestNews(function (it) { return inSlice(it) && boardOk(it.cat); });
+    heroNum.textContent = t;
+    var tone, body;
+    if (y === 0) {
+      tone = t > 0 ? 'up' : 'flat';
+      body = t > 0 ? '<span class="arw">↑</span> 新增' : '— 持平';
+    } else {
+      var p = Math.round((t - y) / y * 100);
+      if (p > 0) { tone = 'up'; body = '<span class="arw">↑</span> ' + p + '%'; }
+      else if (p < 0) { tone = 'down'; body = '<span class="arw">↓</span> ' + Math.abs(p) + '%'; }
+      else { tone = 'flat'; body = '— 持平'; }
+    }
+    heroPill.innerHTML = body;
+    var pctW = y > 0 ? Math.min(Math.abs(Math.round((t - y) / y * 100)), 100) : (t > 0 ? 100 : 0);
+    densityFill.style.width = pctW + '%';
+    densityBox.classList.toggle('down', tone === 'down');
+    densityBox.classList.toggle('flat', tone === 'flat');
+    titems.forEach(function (li) {
+      var cat = li.getAttribute('data-board');
+      var tb = matchNews(function (it) { return inSlice(it) && it.cat === cat; });
+      var yb = yestNews(function (it) { return inSlice(it) && it.cat === cat; });
+      li.querySelector('.tnum').textContent = tb;
+      var d = tb > yb ? { c:'up', a:'↑', n:String(tb - yb) }
+            : tb < yb ? { c:'down', a:'↓', n:String(yb - tb) }
+            : { c:'flat', a:'—', n:'' };
+      var em = li.querySelector('.tdelta');
+      em.className = 'tdelta ' + d.c;
+      em.querySelector('.arw').textContent = d.a;
+      em.querySelector('.dl').textContent = d.n;
+      var active = filterState.board === cat;
+      li.classList.toggle('active', active);
+      li.setAttribute('aria-pressed', active ? 'true' : 'false');
+      li.setAttribute('aria-disabled', (tb === 0 && !active) ? 'true' : 'false');
+    });
+  }
+
+  /* 3.4 renderTabs：顶部标签选中态 + 徽章数字（徽章 = 若点击该标签将得到的条数） */
+  function renderTabs() {
+    var activeKey = filterState.board !== 'all' ? filterState.board
+                  : (filterState.featured ? 'featured' : 'all');
+    tabs.forEach(function (b) {
+      var key = b.getAttribute('data-scope');
+      var on = key === activeKey;
+      var semi = key === 'featured' && filterState.featured && filterState.board !== 'all';
+      b.classList.toggle('active', on);
+      b.classList.toggle('semi', semi);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var n;
+      if (key === 'all') n = matchNews(lvlOk);
+      else if (key === 'featured') n = matchNews(function (it) { return it.featured && lvlOk(it); });
+      else n = matchNews(function (it) { return it.cat === key && lvlOk(it); });
+      b.querySelector('.tbadge').textContent = n;
+    });
+  }
+
+  function renderAll() { renderList(); renderPanel(); renderTabs(); }
+
+  /* 3.5 切换动效：列表淡出 → 统一重渲染 → 淡入（opacity / transform .3s ease） */
+  var fadeTimer = null;
+  function switchView(mutate) {
+    if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+    cardsWrap.classList.add('is-fade');
+    fadeTimer = setTimeout(function () {
+      fadeTimer = null;
+      mutate();
+      cardsWrap.classList.remove('is-fade');
+    }, 170);
+  }
+
+  /* 3.6 事件绑定：各维度独立单选，再次点击当前项即取消；维度间自动 AND 叠加 */
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var key = b.getAttribute('data-scope');
+      if (key === 'all') {
+        if (!filterState.featured && filterState.board === 'all') return;
+        filterState.featured = false;
+        filterState.board = 'all';
+      } else if (key === 'featured') {
+        filterState.featured = !filterState.featured;
+      } else {
+        filterState.board = (filterState.board === key) ? 'all' : key;
+      }
+      switchView(function () { renderAll(); placeCat(false); });
+    });
+  });
+
+  titems.forEach(function (li) {
+    var activate = function () {
+      if (li.getAttribute('aria-disabled') === 'true') return;
+      var cat = li.getAttribute('data-board');
+      filterState.board = (filterState.board === cat) ? 'all' : cat;
+      switchView(function () { renderAll(); placeCat(false); });
+    };
+    li.addEventListener('click', activate);
+    li.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    });
+  });
+
+  segs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var next = b.getAttribute('data-filter');
+      if (next === filterState.lvl) return;
+      filterState.lvl = next;
+      switchView(function () { renderAll(); });
+    });
+  });
+
+  if (emptyReset) {
+    emptyReset.addEventListener('click', function () {
+      filterState.featured = false;
+      filterState.board = 'all';
+      switchView(function () { renderAll(); placeCat(false); });
+    });
+  }
+
+  window.addEventListener('resize', function () { placeAll(true); });
+
+  /* ---------- 4. 键盘快捷操作 1 / 2 / 3 ---------- */
+  window.addEventListener('keydown', function (e) {
+    if (e.key === '1' || e.key === '2' || e.key === '3') {
+      var i = parseInt(e.key, 10) - 1;
+      // 处于筛选隐藏状态的卡片不可被键盘误标记，避免「看不见却被改了状态」
+      if (cards[i] && !cards[i].hidden) toggle(i);
+    }
+    if (e.key === '0') {
+      state = state.map(function () { return false; });
+      render();
+    }
+  });
+
+  /* ---------- 5. 顶部滚动进度条（随页面滚动 0 → 100%） ---------- */
+  var sprog = document.getElementById('scrollProgress');
+  function updateScrollProgress() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, (window.scrollY || doc.scrollTop) / max * 100) : 0;
+    sprog.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  window.addEventListener('resize', updateScrollProgress);
+  updateScrollProgress();
+
+  /* ---------- 6. 热点关键词胶囊：点击按压缩放回弹 ---------- */
+  Array.prototype.slice.call(document.querySelectorAll('.kw span')).forEach(function (el) {
+    el.addEventListener('click', function () {
+      el.classList.remove('kwpop');
+      void el.offsetWidth;                 // 强制重排，连点也能重播动画
+      el.classList.add('kwpop');
+    });
+    el.addEventListener('animationend', function () { el.classList.remove('kwpop'); });
+  });
+
+  render();
+  renderAll();
+  placeAll(true);
+
+  // 字体 / 窗口就绪后再校准一次指示器位置（避免字体替换导致宽度偏差）
+  window.addEventListener('load', function () { placeAll(true); });
+  if (document.fonts && document.fonts.ready && document.fonts.ready.then) {
+    document.fonts.ready.then(function () { placeAll(true); });
+  }
+})();
+</script>
+
+</body>
+</html>
