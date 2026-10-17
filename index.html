@@ -111,20 +111,21 @@
     color:var(--text-primary);
     font-family:var(--font-sans);
     font-size:16px;font-weight:400;line-height:1.45;letter-spacing:0;
-    display:flex;align-items:center;justify-content:center;
-    overflow:hidden;
+    display:flex;align-items:flex-start;justify-content:center;
+    /* 全局滚动：内容超出可视区域时由页面右侧滚动条统一浏览，卡片内部不出现滚动条 */
+    overflow-x:hidden;overflow-y:auto;
     -webkit-font-smoothing:antialiased;
   }
 
-  /* ============ 16:9 画板 ============ */
+  /* ============ 页面画板 ============ */
   .stage{
     position:relative;flex:0 0 auto;
-    width:1600px;height:900px;
+    width:min(1600px,100%);height:auto;min-height:900px;
     display:flex;flex-direction:column;
-    overflow:hidden;
+    /* 纵向不裁切：让长卡片自然增高，由页面整体滚动承载 */
+    overflow-x:hidden;overflow-y:visible;
     border-radius:0;
     background:var(--bg-page);
-    transform-origin:center center;
     box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(80,60,60,.08);
   }
 
@@ -250,9 +251,9 @@
   .hero-tab.semi .tunit{color:var(--blue)}
 
   /* ============ 主栅格 ============ */
-  .main{flex:1;min-height:0;display:flex;gap:18px;padding:12px 40px 0}
+  .main{flex:0 0 auto;display:flex;gap:18px;padding:12px 40px 0}
   .left{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
-  .right{flex:0 0 372px;width:372px}
+  .right{flex:0 0 372px;width:372px;align-self:flex-start}
 
   /* ============ 今日重点摘要（Mistral 奶油卡：以底色定义，无描边） ============ */
   .summary{
@@ -332,31 +333,29 @@
   }
 
   /* ============ 新闻卡片（Mistral 奶油卡：平底色，无描边无阴影） ============ */
+  /* 三栏等宽卡片布局：卡片高度由自身内容撑开（align-items:start），
+     同行卡片互不拉伸；内容超出时由页面右侧全局滚动条统一浏览 */
   .cards{
-    flex:1;min-height:0;display:grid;gap:10px;align-items:start;
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    align-items:start;
     opacity:1;transform:translateY(0);
     transition:opacity .3s ease,transform .3s ease;
   }
   /* 切换筛选时列表淡出 → 换内容 → 淡入 */
   .cards.is-fade{opacity:0;transform:translateY(8px)}
+  /* 堆叠容器不参与布局，三张卡片直接成为网格项，各占一列 */
   .col-stack{display:contents}
 
-  /* 视图布局：全部 / 高优先级 / 中优先级 */
-  .cards[data-view="all"]{grid-template-columns:1.5fr 1fr;grid-template-rows:auto auto}
-  .cards[data-view="all"] .card-feat{grid-column:1;grid-row:1 / span 2}
-  .cards[data-view="all"] .news[data-card="2"]{grid-column:2;grid-row:1}
-  .cards[data-view="all"] .news[data-card="3"]{grid-column:2;grid-row:2}
+  /* 视图切换只改变列的显隐（每张卡片始终独占一列），三栏等宽保持不变 */
+  .cards .card-feat{grid-column:1;grid-row:auto}
+  .cards .news[data-card="2"]{grid-column:2;grid-row:auto}
+  .cards .news[data-card="3"]{grid-column:3;grid-row:auto}
 
-  .cards[data-view="high"]{grid-template-columns:1.15fr 1fr;grid-template-rows:auto}
-  .cards[data-view="high"] .card-feat{grid-column:1;grid-row:1}
-  .cards[data-view="high"] .news[data-card="2"]{grid-column:2;grid-row:1}
-
-  .cards[data-view="mid"]{grid-template-columns:1fr;grid-template-rows:auto}
-  .cards[data-view="mid"] .news[data-card="3"]{grid-column:1;grid-row:1}
-
-  /* 板块标签激活时统一单列，避免单张卡片被双列栅格甩到一侧 */
-  .cards.cat-narrow{grid-template-columns:1fr;grid-template-rows:auto}
-  .cards.cat-narrow .news{grid-column:1;grid-row:auto}
+  /* 板块筛选时隐藏未命中的卡片，可见卡片仍按各自列就位，避免被甩到一侧 */
+  .cards.cat-narrow .news:not([data-cat="行业动态"]){}
 
   /* 板块无对应精读卡片时的空态占位 */
   .cards-empty{
@@ -418,11 +417,12 @@
   .card-feat .nhead .idx{font-size:13px}
   .card-feat .nhead .cat{font-size:12.5px;padding:4px 12px}
   .card-feat .ntitle{margin-top:10px;font-family:var(--font-display);font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.6px}
+  /* 正文不限高、不裁切，完整展示全部文字（无内部滚动条） */
   .card-feat .ndesc{
-    margin-top:9px;flex:0 1 auto;min-height:0;
-    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    margin-top:9px;flex:0 0 auto;
     font-size:15.5px;font-weight:400;line-height:1.52;letter-spacing:0;
     color:var(--gray-700);
+    overflow:visible;
     overflow-wrap:break-word;word-break:break-word;
   }
   .card-feat .nstat{margin-top:10px;gap:8px}
@@ -453,14 +453,13 @@
   .ntitle a{color:var(--charcoal);text-decoration:none;transition:color .2s}
   .ntitle a:hover{color:var(--m-orange)}
 
+  /* 正文不限高、不裁切，完整展示全部文字（无内部滚动条） */
   .ndesc{
     margin-top:8px;font-size:12.5px;font-weight:400;line-height:1.55;color:var(--gray-700);
-    max-height:120px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    max-height:none;overflow:visible;
     overflow-wrap:break-word;word-break:break-word;
   }
-  .ndesc::-webkit-scrollbar{width:4px}
-  .ndesc::-webkit-scrollbar-track{background:transparent}
-  .ndesc::-webkit-scrollbar-thumb{background:rgba(139,58,58,.30);border-radius:40px}
+  /* 内部滚动条样式已随 max-height / overflow-y 一并移除，滚动统一交给页面 */
 
   .nstat{display:flex;flex-wrap:wrap;gap:7px;flex-shrink:0}
   .nstat span{
@@ -483,7 +482,6 @@
   .news:not(.card-feat){padding:16px}
   .news:not(.card-feat) .ntitle{
     margin-top:10px;font-size:16px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
   .news:not(.card-feat) .ndesc{margin-top:6px}
   .news:not(.card-feat) .nstat{margin-top:8px;gap:6px}
@@ -497,20 +495,20 @@
   /* 视图专属排版：仅在桌面端（≥861px）生效，移动端走统一单列 */
   @media (min-width:861px){
     .cards[data-view="high"] .news:not(.card-feat){padding:16px}
-    .cards[data-view="high"] .news:not(.card-feat) .ntitle{font-size:20px;-webkit-line-clamp:3}
+    .cards[data-view="high"] .news:not(.card-feat) .ntitle{font-size:20px}
     .cards[data-view="high"] .news:not(.card-feat) .ndesc{font-size:14.5px;line-height:1.62}
     .cards[data-view="high"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0}
     .cards[data-view="high"] .news:not(.card-feat) .nstat span{font-size:11.5px;padding:5px 11px}
-    .cards[data-view="high"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:156px}
+    .cards[data-view="high"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:140px}
     .cards[data-view="high"] .news:not(.card-feat) .done-btn{right:22px;bottom:20px;height:36px;padding:0 18px;font-size:13.5px}
 
     .cards[data-view="mid"] .news:not(.card-feat){padding:16px}
-    .cards[data-view="mid"] .news:not(.card-feat) .ntitle{font-size:24px;letter-spacing:-.4px;-webkit-line-clamp:3}
+    .cards[data-view="mid"] .news:not(.card-feat) .ntitle{font-size:24px;letter-spacing:-.4px}
     .cards[data-view="mid"] .news:not(.card-feat) .ndesc{font-size:15px;line-height:1.6}
     .cards[data-view="mid"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0}
     .cards[data-view="mid"] .news:not(.card-feat) .nstat span{font-size:12px;padding:6px 12px}
-    .cards[data-view="mid"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:0}
-    .cards[data-view="mid"] .news:not(.card-feat) .done-btn{position:static;width:100%;height:42px;margin-top:14px;padding:0;font-size:15px}
+    .cards[data-view="mid"] .news:not(.card-feat) .nfoot{margin-top:12px;padding-top:11px;padding-right:140px}
+    .cards[data-view="mid"] .news:not(.card-feat) .done-btn{right:22px;bottom:20px;height:36px;padding:0 18px;font-size:13.5px}
   }
 
   /* 阅读完成按钮（新拟态暖橙：40px 胶囊 + 双向外阴影立体悬浮） */
@@ -560,7 +558,7 @@
 
   /* ============ 右侧趋势面板（降噪版：去外框 + 极浅左分割线 + 安静的数据排版） ============ */
   .panel{
-    height:100%;display:flex;flex-direction:column;gap:18px;
+    display:flex;flex-direction:column;gap:18px;
     padding:24px;gap:14px;
     border:1px solid #E8E4DF;
     border-radius:12px;
@@ -672,7 +670,7 @@
 
   /* —— 阅读进度：轻量线性条（灰底 / 橙前景 / 6px / 圆角 3px），取代原有圆形进度环 —— */
   .progress{
-    margin-top:auto;padding-top:16px;
+    margin-top:14px;padding-top:16px;
     border-top:1px solid var(--line-light);
     display:flex;flex-direction:column;gap:10px;
   }
@@ -700,6 +698,7 @@
   /* ============ 页脚（Mistral 标志性 Block 渐变收尾带） ============ */
   .footbar{
     flex:0 0 auto;
+    margin-top:18px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;
     padding:11px 40px 12px;
     background:var(--ink);
@@ -717,9 +716,20 @@
   }
 
   /* ============================================================
-     移动端（≤860px）：放弃整体缩放，改为真正的流式单列布局
+     响应式断点：≤900px 两列 / ≤600px 单列（文字自动换行）
      ============================================================ */
-  @media (max-width:860px){
+  @media (max-width:900px){
+    .cards{
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+    /* 两列时每张卡片按顺序自然换行，取消固定列位 */
+    .cards .card-feat,
+    .cards .news[data-card="2"],
+    .cards .news[data-card="3"]{grid-column:auto;grid-row:auto}
+  }
+
+  @media (max-width:600px){
     html,body{height:auto}
     body{
       display:block;
@@ -733,6 +743,13 @@
       box-shadow:none;
       overflow:visible;
     }
+
+    /* 单列铺满，全部文字完整展示、自动换行，不产生任何内部滚动条 */
+    .cards{grid-template-columns:1fr;gap:18px}
+    .cards .news,
+    .cards .card-feat{grid-column:1!important;grid-row:auto}
+    .cards .col-stack{display:contents}
+    .ntitle,.ndesc,.nstat span,.src,.cat,.lvl{overflow-wrap:anywhere;word-break:break-word}
 
     /* —— 导航：允许换行，避免挤压 —— */
     .nav{
@@ -759,20 +776,7 @@
     .main{display:block;padding:14px 16px 0}
     .left{display:block}
     .right{width:auto;flex:none;margin-top:18px;padding-top:0;border-top:none}
-    .panel{height:auto;padding:20px;gap:16px}
-
-    /* —— 新闻卡片：单列铺满，取消网格定位 —— */
-    .cards{display:block;min-height:0}
-    .col-stack{display:block}
-    .cards .news{margin-bottom:12px}
-    .cards > .col-stack{margin-bottom:0}
-    .cards > .col-stack > .news:last-child{margin-bottom:12px}
-    .cards[data-view="all"] .card-feat,
-    .cards[data-view="all"] .news[data-card="2"],
-    .cards[data-view="all"] .news[data-card="3"],
-    .cards[data-view="high"] .card-feat,
-    .cards[data-view="high"] .news[data-card="2"],
-    .cards[data-view="mid"] .news[data-card="3"]{grid-column:auto;grid-row:auto}
+    .panel{padding:20px;gap:16px}
 
     /* —— 卡片正文：单列下完整展开，不再截断 —— */
     .card-feat{padding:16px}
@@ -780,7 +784,7 @@
     .card-feat .ndesc{font-size:15px;line-height:1.6}
     .news:not(.card-feat){padding:16px}
     .news:not(.card-feat) .ntitle{margin-top:10px;font-size:17px;line-height:1.45}
-    .news:not(.card-feat) .ndesc{font-size:13.5px;line-height:1.6;max-height:132px}
+    .news:not(.card-feat) .ndesc{font-size:13.5px;line-height:1.6;max-height:none}
     .news:not(.card-feat) .nstat,
     .cards[data-view="high"] .news:not(.card-feat) .nstat,
     .cards[data-view="mid"] .news:not(.card-feat) .nstat{margin-top:8px;padding-top:0;gap:6px}
@@ -1028,14 +1032,437 @@
   }
 
   /* —— 装饰层移动端收敛 —— */
-  @media (max-width:860px){
+  @media (max-width:600px){
     .main::before{display:none}
     .hero-head::after{margin-left:0}
   }
 
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation:none!important;transition:none!important}
+  /* ============================================================
+     第 24 轮 · 中间三张新闻卡片「布局重写」
+     范围：只作用于 .cards 内的三张 .news 卡片；不改任何颜色令牌，
+     不动顶部 / 右侧趋势面板 / 页脚，不改筛选与阅读进度逻辑。
+     结构：flex 横向排列 + 卡内四层（顶部信息 / 正文 / 分割线 / 底部信息）
+     ============================================================ */
+
+  /* ---------- 1. 卡片外壳：横向 flex 排列、居中、不撑满全宽 ---------- */
+  .cards{
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;                         /* 卡片间距 24px */
+    justify-content:center;           /* 卡片组整体居中 */
+    align-items:flex-start;           /* 各卡片高度由自身内容决定 */
   }
+  .cards .news{
+    flex:1 1 320px;                   /* 可伸缩但保留合适基准宽度 */
+    max-width:420px;                  /* 取消撑满全宽：超宽时居中留白 */
+    min-width:0;
+    padding:24px;                     /* 内部四周 24px */
+    background:#FFFFFF;               /* 纯白底（沿用原配色） */
+    border:1px solid #E8E4DF;         /* 极细浅灰边框 */
+    border-radius:12px;
+  }
+  /* 高优先级左缘勃艮第红细条：保留原有配色标识 */
+  .cards .news[data-lvl="high"]{border-left:3px solid var(--blue)}
+  /* 卡片级位移/阴影动画会破坏 flex 对齐，交由内部元素承担 */
+  .cards .news:hover{transform:none;border-color:#E1E1E1}
+  .cards .news{animation:none}
+
+  /* ---------- 2. 层级一：顶部信息行（大序号 + 标题 + 极简标签） ---------- */
+  .cards .news .n-top{
+    display:flex;align-items:flex-start;gap:14px;
+    padding-right:64px;               /* 为 03 卡右上角小字提示预留空间 */
+    min-width:0;
+  }
+  .cards .news .n-idx{
+    flex:0 0 auto;
+    font-family:var(--font-mono);
+    font-size:28px;font-weight:400;line-height:1;
+    letter-spacing:-.5px;
+    color:#D8D2CB;                    /* 巨大浅灰序号 */
+    user-select:none;
+  }
+  .cards .news .n-main{min-width:0;display:flex;flex-direction:column;gap:8px}
+  .cards .news .n-title{
+    margin:0;
+    font-family:var(--font-sans);
+    font-size:18px;font-weight:700;line-height:1.35;letter-spacing:-.2px;
+    color:#222222;                    /* 深黑标题（沿用原色） */
+  }
+  .cards .news .n-title a{color:#222222;text-decoration:none;transition:color .2s}
+  .cards .news .n-title a:hover{color:var(--m-orange)}
+  .cards .news .n-tags{display:flex;flex-wrap:wrap;gap:8px}
+  /* 极简浅灰细线框标签（无任何色块背景） */
+  .cards .news .n-tag{
+    display:inline-flex;align-items:center;
+    font-family:var(--font-sans);font-size:11px;font-weight:400;line-height:1;
+    letter-spacing:.4px;
+    color:#7A7571;
+    background:transparent;
+    border:1px solid #E2DCD4;border-radius:4px;
+    padding:5px 9px;white-space:nowrap;
+  }
+
+  /* ---------- 3. 层级二：正文区（14px 中灰 / 1.6 行距） ---------- */
+  .cards .news .n-body{
+    margin:16px 0 0;                  /* 与标题保持 16px 间距 */
+    font-size:14px;font-weight:400;line-height:1.6;letter-spacing:.1px;
+    color:#7A7571;
+    overflow-wrap:break-word;word-break:break-word;
+  }
+
+  /* ---------- 4. 层级三：分割线 ---------- */
+  .cards .news .n-rule{
+    height:0;margin:20px 0;
+    border:0;border-top:1px solid #E8E4DF;
+  }
+
+  /* ---------- 5. 层级四：底部信息行（左来源统计 / 右操作状态） ---------- */
+  .cards .news .n-bottom{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;
+  }
+  .cards .news .n-meta{
+    display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;
+    min-width:0;
+    font-size:12px;line-height:1.5;color:#A5A09B;   /* 12px 浅灰小字 */
+  }
+  .cards .news .n-meta .sep{color:#E2DCD4}
+  .cards .news .n-meta .n-stat b{color:#7A7571;font-weight:600}
+  /* 操作状态：纯文字 + 纯灰打勾，无彩色背景块 */
+  .cards .news .done-btn{
+    position:static;right:auto;bottom:auto;
+    margin:0;width:auto;height:auto;padding:0;flex:0 0 auto;
+    display:inline-flex;align-items:center;gap:6px;
+    background:transparent;border:none;border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:12px;font-weight:400;letter-spacing:.2px;
+    text-transform:none;
+    color:#7A7571;cursor:pointer;
+    transition:color .2s ease;
+  }
+  .cards .news .done-btn:hover,
+  .cards .news .done-btn:focus-visible{
+    background:transparent;box-shadow:none;color:#222222;
+  }
+  .cards .news .done-btn svg{
+    width:14px;height:14px;flex:0 0 14px;color:#C9C2BA;stroke:currentColor;
+  }
+  /* 已读态：状态文字与对勾转为沉稳的勃艮第红（唯一保留的点缀色） */
+  .cards .news.done{opacity:1;background:#FCFBFA}
+  .cards .news.done .done-btn,
+  .cards .news.done .done-btn:hover{color:#8B3A3A}
+  .cards .news.done .done-btn svg{color:#8B3A3A;stroke:currentColor}
+  .cards .news.done .n-body{color:#A5A09B}
+  .cards .news.done .n-title a{color:#7A7571}
+  /* 右上角小对勾（仅已读时显示）：极简灰描边 */
+  .cards .news .done-badge{
+    top:18px;right:18px;width:20px;height:20px;border-radius:50%;
+    display:grid;place-items:center;
+    background:transparent;border:1px solid #E2DCD4;
+    color:#8B3A3A;box-shadow:none;
+  }
+  .cards .news .done-badge svg{width:11px;height:11px}
+  .cards .news.done .done-badge{opacity:1;transform:scale(1)}
+
+  /* ---------- 6. 卡片 03 右上角小字提示（显示 x / x 条） ---------- */
+  .cards .news .filter-count{
+    position:absolute;top:18px;right:18px;
+    margin:0;
+    font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:.2px;
+    color:#B5AFA8;white-space:nowrap;
+  }
+
+  /* ---------- 7. 动画钩子保留（点击弹跳 / 筛选淡出） ---------- */
+  .cards .news .done-btn svg,.cards .news .done-badge svg{transform-origin:center}
+  .cards .news.pop .done-btn svg{animation:checkPop .42s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes checkPop{
+    0%{transform:scale(1)}
+    42%{transform:scale(1.2)}
+    100%{transform:scale(1)}
+  }
+
+  /* ---------- 8. 响应式：≤900px 两列 / ≤600px 单列 ---------- */
+  @media (max-width:900px){
+    .cards{gap:20px}
+    .cards .news{flex:1 1 300px;max-width:none}
+  }
+  @media (max-width:600px){
+    .cards{flex-direction:column;gap:16px}
+    .cards .news{width:100%;flex:0 0 auto;padding:20px}
+    .cards .news .n-top{padding-right:0}
+    .cards .news .n-bottom{flex-direction:column;align-items:flex-start;gap:12px}
+    .cards .news .filter-count{position:static;top:auto;right:auto}
+  }
+  /* ============================================================
+     第 25 轮 · 功能组件补充与视觉优化
+     配色体系（严格遵从输出要求）：背景 #F9F8F6 / 卡片白底 / 边框 #E8E4DF
+     / 主文字 #222222 / 副文字 #7A7571 / 强调红 #8B3A3A
+     ============================================================ */
+  :root{
+    --bg-page:#F9F8F6;
+    --bg-canvas:#F9F8F6;
+    --m-ivory:#F9F8F6;
+    --bg-card:#FFFFFF;
+    --border-light:#E8E4DF;
+    --line:#E8E4DF;
+    --line-light:#F1EEE9;
+    --text-main:#222222;
+    --ink:#222222;
+    --ink-strong:#222222;
+    --charcoal:#222222;
+    --text-secondary:#7A7571;
+    --gray-700:#7A7571;
+    --gray-600:#7A7571;
+    --gray-500:#A5A09B;
+    --accent-primary:#8B3A3A;
+    --accent-light:#F4EAEA;
+    --blue:#8B3A3A;
+    --blue-deep:#6E2B2B;
+    --blue-tint:#F4EAEA;
+    --blue-soft:#F4EAEA;
+    --m-orange:#8B3A3A;
+    --m-flame:#6E2B2B;
+  }
+
+  /* ---------- 【3】今日头条 / 主编精选 大卡片 ---------- */
+  .headline{
+    display:grid;grid-template-columns:220px minmax(0,1fr);
+    gap:22px;align-items:stretch;
+    margin-top:12px;padding:18px;
+    background:#FFFFFF;
+    border:1px solid #E8E4DF;border-radius:12px;
+    box-shadow:0 4px 12px rgba(80,60,60,.03);
+    animation:rise .6s cubic-bezier(.22,.72,.2,1) backwards;
+  }
+  /* 左侧渐变配图色块（科技感：深炭黑 → 强调红），叠加细网格纹理 */
+  .headline-media{
+    position:relative;min-height:132px;border-radius:9px;overflow:hidden;
+    background:linear-gradient(135deg,#222222 0%,#6E2B2B 52%,#8B3A3A 100%);
+  }
+  .headline-media::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px);
+    background-size:18px 18px;
+  }
+  .headline-media::after{
+    content:"";position:absolute;right:-30px;bottom:-40px;width:150px;height:150px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.22) 0%,transparent 68%);
+  }
+  .headline-media .hm-tag{
+    position:absolute;left:14px;top:14px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
+    color:rgba(255,255,255,.86);
+    border:1px solid rgba(255,255,255,.34);border-radius:4px;
+    padding:4px 8px;background:rgba(255,255,255,.08);
+  }
+  .headline-body{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
+  .headline-eyebrow{
+    font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:2px;
+    text-transform:uppercase;color:#8B3A3A;
+  }
+  .headline-title{
+    margin:0;font-family:var(--font-sans);
+    font-size:25px;font-weight:700;line-height:1.36;letter-spacing:-.4px;color:#222222;
+  }
+  .headline-title a{color:#222222;text-decoration:none;transition:color .2s}
+  .headline-title a:hover{color:#8B3A3A}
+  .headline-sum{
+    margin:0;font-size:14px;font-weight:400;line-height:1.7;color:#7A7571;
+    max-width:70ch;
+  }
+  .headline-act{display:flex;align-items:center;gap:16px;margin-top:2px}
+  .headline-more{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--font-sans);font-size:13px;font-weight:500;letter-spacing:.2px;
+    color:#222222;text-decoration:none;
+    background:transparent;border:none;padding:0;cursor:pointer;
+    border-bottom:1px solid #D8D2CB;padding-bottom:3px;
+    transition:color .2s,border-color .2s;
+  }
+  .headline-more:hover{color:#8B3A3A;border-color:#E0C4C4}
+  .headline-more svg{width:14px;height:14px;transition:transform .24s cubic-bezier(.22,.72,.2,1)}
+  .headline-more:hover svg{transform:translateX(3px)}
+  .headline-meta{font-family:var(--font-mono);font-size:11px;color:#A5A09B}
+
+  /* ---------- 【1】板块分布：极简横向条形图 ---------- */
+  /* 收起旧版的数字旁迷你条与行底柱状条，改用独立条形列 */
+  .tright::after{display:none}
+  .titem::after{display:none}
+  .titem{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 92px 28px 40px;
+    align-items:center;gap:10px;
+    margin:0 0 2px;padding:7px 8px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .titem:last-child{margin-bottom:0}
+  .titem:hover{background:rgba(80,60,60,.04)}
+  .titem[aria-pressed="true"]{background:rgba(139,58,58,.07)}
+  .titem[aria-pressed="true"] .tname{color:#222222;font-weight:600}
+  .titem[aria-disabled="true"]{opacity:.5;cursor:default}
+  .titem .tleft{min-width:0}
+  .tname{
+    display:block;font-size:12px;font-weight:400;line-height:1.5;color:#7A7571;
+    overflow-wrap:break-word;
+  }
+  .tbar{
+    display:block;height:6px;border-radius:3px;overflow:hidden;
+    background:#F1EEE9;                      /* 浅灰进度条底色 */
+  }
+  .tbar-fill{
+    display:block;height:100%;
+    width:calc(var(--bw,0) / 7 * 100%);   /* 填充比例 = 今日条数 / 全站最大值(7) */
+    max-width:100%;
+    border-radius:3px;
+    background:#8B3A3A;                      /* 深灰填充 */
+    transition:width .55s cubic-bezier(.22,.72,.2,1),background .3s ease;
+  }
+  .titem[aria-pressed="true"] .tbar-fill{background:#8B3A3A}   /* 选中：强调红 */
+  .tnum{
+    font-family:var(--font-mono);font-size:12px;font-weight:600;line-height:1.5;
+    color:#222222;background:transparent;border-radius:0;padding:0;
+    min-width:0;text-align:right;
+  }
+  .titem[aria-pressed="true"] .tnum{background:transparent;color:#8B3A3A}
+  .tright{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto}
+  .tdelta{min-width:34px}
+
+  /* ---------- 【2】热点关键词：克制分类底色 + 热度分级 + 最热红点 ---------- */
+  .kw{gap:8px}
+  .kw span{
+    font-size:12px;font-weight:400;
+    border:1px solid transparent;border-radius:6px;
+    padding:4px 10px;
+  }
+  .kw .kw-tech{background:#EEF3FB;color:#3B5B8C}     /* 技术类：浅蓝 */
+  .kw .kw-cap{background:#EDF6EF;color:#3F6B52}      /* 资本类：浅绿 */
+  .kw .kw-prod{background:#F5F2FB;color:#564A7E}     /* 产品类：浅紫 */
+  .kw .kw-view{background:#F1EEE9;color:#7A7571}     /* 观点类：中性灰 */
+  .kw span.kw-l{font-size:13px;font-weight:500}
+  .kw span.kw-s{font-size:11.5px}
+  .kw span.is-top{position:relative;padding-right:18px}
+  .kw span.is-top::after{                            /* 最热关键词：微小红点 */
+    content:"";position:absolute;right:8px;top:50%;margin-top:-2.5px;
+    width:5px;height:5px;border-radius:50%;background:#8B3A3A;
+  }
+  .kw span:hover{transform:none}
+  .kw .kw-tech:hover{background:#8B3A3A;color:#FFFFFF}
+  .kw .kw-cap:hover{background:#8B3A3A;color:#FFFFFF}
+  .kw .kw-prod:hover{background:#8B3A3A;color:#FFFFFF}
+  .kw .kw-view:hover{background:#8B3A3A;color:#FFFFFF}
+
+  /* ---------- 【5】实时动态时间轴 ---------- */
+  .tl{list-style:none;position:relative;margin:10px 0 0;padding-left:20px}
+  .tl::before{
+    content:"";position:absolute;left:5px;top:7px;bottom:9px;width:1px;
+    background:#E2DCD4;                        /* 浅灰时间线 */
+  }
+  .tl li{
+    position:relative;margin-bottom:13px;
+    font-size:12px;font-weight:400;line-height:1.6;color:#7A7571;
+  }
+  .tl li:last-child{margin-bottom:0}
+  .tl li::before{
+    content:"";position:absolute;left:-19px;top:6px;
+    width:7px;height:7px;border-radius:50%;background:#222222;   /* 深色小圆点 */
+    box-shadow:0 0 0 3px #FFFFFF;
+  }
+  .tl li.is-live::before{background:#8B3A3A}
+  .tl .tl-time{
+    display:inline-block;margin-right:7px;
+    font-family:var(--font-mono);font-size:11px;font-weight:400;color:#A5A09B;
+  }
+  .tl .tl-txt b{color:#222222;font-weight:600}
+  .tl-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    margin-left:6px;font-size:10px;letter-spacing:.6px;color:#8B3A3A;
+  }
+  .tl-badge::before{content:"";width:4px;height:4px;border-radius:50%;background:#8B3A3A}
+
+  /* ---------- 【6】微交互：反馈按钮 / 收藏按钮 / 高优先级红顶边 ---------- */
+  .feedback{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding-top:12px;border-top:1px solid #E8E4DF;
+  }
+  .feedback .fb-t{font-size:12px;color:#7A7571}
+  .fb-group{display:inline-flex;align-items:center;gap:8px}
+  .fb-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:transparent;border:1px solid #E8E4DF;border-radius:20px;
+    padding:5px 11px;cursor:pointer;
+    font-family:var(--font-sans);font-size:12px;font-weight:400;color:#7A7571;
+    transition:color .2s,border-color .2s,background .2s;
+  }
+  .fb-btn svg{width:14px;height:14px}
+  .fb-btn:hover{color:#222222;border-color:#D8D2CB;background:#F9F8F6}
+  .fb-btn.is-on{color:#8B3A3A;border-color:#E3C3C3;background:#F4EAEA}
+  .fb-btn:focus-visible{outline:2px solid #8B3A3A;outline-offset:2px}
+  .fb-note{font-family:var(--font-mono);font-size:11px;color:#A5A09B}
+
+  /* 卡片：高优先级顶部 1px 强调红细边（打破视觉平均） */
+  .cards .news[data-lvl="high"]{border-top:1px solid #8B3A3A}
+  /* 卡片：悬浮出现的收藏图标（默认隐藏） */
+  .cards .news .save-btn{
+    position:absolute;top:16px;right:16px;
+    width:24px;height:24px;display:grid;place-items:center;
+    background:transparent;border:none;padding:0;cursor:pointer;
+    color:#B5AFA8;
+    opacity:0;transform:translateY(-2px);
+    transition:opacity .2s ease,color .2s ease,transform .2s ease;
+  }
+  .cards .news:hover .save-btn,
+  .cards .news .save-btn:focus-visible{opacity:1;transform:none}
+  .cards .news .save-btn.is-on{opacity:1;color:#8B3A3A}
+  .cards .news .save-btn svg{width:15px;height:15px}
+  .cards .news .save-btn:focus-visible{outline:2px solid #8B3A3A;outline-offset:2px;border-radius:4px}
+  /* 03 卡右上角小字提示左移，与收藏图标并排不相撞 */
+  .cards .news .filter-count{right:46px}
+  /* 已读对勾移到卡片左下方角落，避免与收藏图标重叠 */
+  .cards .news .done-badge{top:-9px;right:-9px}
+
+  /* 卡片：AI 划重点（要点列表） */
+  .cards .news .n-points-head{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:1px;
+    text-transform:uppercase;color:#A5A09B;margin-bottom:8px;
+  }
+  .cards .news .n-points-head svg{width:12px;height:12px;color:#8B3A3A}
+  .cards .news .n-points{list-style:none;margin:0;padding:0}
+  .cards .news .n-points li{
+    position:relative;padding-left:16px;
+    font-size:14px;font-weight:400;line-height:1.6;color:#7A7571;
+  }
+  .cards .news .n-points li + li{margin-top:8px}
+  .cards .news .n-points li::before{
+    content:"";position:absolute;left:2px;top:.62em;
+    width:5px;height:5px;border-radius:50%;background:#8B3A3A;opacity:.85;
+  }
+  .cards .news .n-points li b{color:#222222;font-weight:600}
+  .cards .news.done .n-points li{color:#A5A09B}
+  /* 标签内小图标：单色线性 */
+  .cards .news .n-tag{gap:6px}
+  .cards .news .n-tag svg{width:13px;height:13px;flex:0 0 13px;color:#A5A09B}
+
+  /* 面板内新增模块的间距（沿用既有分割线语言） */
+  .panel > .tl-block{border-top:1px solid var(--line-light);padding-top:14px}
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width:900px){
+    .headline{grid-template-columns:180px minmax(0,1fr);gap:18px}
+    .titem{grid-template-columns:minmax(0,1fr) 72px 26px 38px}
+  }
+  @media (max-width:600px){
+    .headline{grid-template-columns:1fr;gap:14px;padding:16px}
+    .headline-media{min-height:112px}
+    .headline-title{font-size:21px}
+    .headline-sum{font-size:13.5px}
+    .titem{grid-template-columns:minmax(0,1fr) 64px 24px 36px;gap:8px;padding:6px 4px}
+    .feedback{flex-direction:column;align-items:flex-start;gap:10px}
+  }
+
 </style>
 </head>
 <body data-page-node-id="ekU47wXcg6UiIev3xNGnuj">
@@ -1101,6 +1528,31 @@
         </div>
       </section>
 
+      <!-- ============ 今日头条 / 主编精选（通栏大卡片） ============ -->
+      <section class="headline" style="animation-delay:.06s" aria-label="今日头条 主编精选">
+        <div class="headline-media" aria-hidden="true">
+          <span class="hm-tag">Top Story</span>
+        </div>
+        <div class="headline-body">
+          <div class="headline-eyebrow">主编精选 · EDITOR'S PICK</div>
+          <h2 class="headline-title">
+            <a href="https://aihot.news/items/cmu1ju3b00pmgrocnrgwe6e9e" target="_blank" rel="noopener">
+              Apple 新一代 Apple Intelligence 落地：Siri AI 测试版上线，同步铺开全平台
+            </a>
+          </h2>
+          <p class="headline-sum">
+            AI 摘要：Apple 把「更强大、更个性化的智能助理」作为本轮主线，Siri AI 以测试版开放体验，并借 iOS 27 / iPadOS 27 / macOS 27 一次性把新能力推向全平台——这也意味着端侧智能助理的竞争正式进入系统级整合阶段。
+          </p>
+          <div class="headline-act">
+            <a class="headline-more" href="https://aihot.news/items/cmu1ju3b00pmgrocnrgwe6e9e" target="_blank" rel="noopener">
+              阅读全文
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </a>
+            <span class="headline-meta">AIHOT 收录 · 09-16 08:06 · 热点榜第 1 位</span>
+          </div>
+        </div>
+      </section>
+
       <!-- 重要程度筛选 -->
       <div class="filterbar">
         <span class="filter-label">FILTER BY PRIORITY</span>
@@ -1116,101 +1568,158 @@
       <div class="cards" data-view="all" data-page-node-id="JBv6qmdXTkBLQe0Rgi9M2I">
 
         <!-- 卡片 1 -->
-        <article class="news card-feat" data-card="1" data-lvl="high" data-cat="模型发布" style="animation-delay:.10s" data-page-node-id="pCIoY1jEfFVkJjVEBsb86U">
-          <span class="done-badge" aria-hidden="true" data-page-node-id="g9AOoewrUzdLMRIB5qrpQ6">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="lTwRDYuAxsKWSjwOo3Mx46"><path d="M20 6 9 17l-5-5" data-page-node-id="hi2TlyPpGJcmaXeaz32XBL"/></svg>
+        <article class="news" data-card="1" data-lvl="high" data-cat="模型发布">
+          <span class="done-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </span>
-          <div class="nhead" data-page-node-id="1QJKS77xgIaN28FcNpLHmv">
-            <div class="ncat" data-page-node-id="Q9sPXCbiDakReArABkGFfp"><span class="idx" data-page-node-id="DZIR5DIuqrjEOji01TG4Km">01</span><span class="cat" data-page-node-id="lKMAQU8GYJ8irhREo6w9KS">模型发布</span></div>
-            <span class="lvl lvl-high" data-page-node-id="2Lsr4r7XnH5pp7A7c4xGyv"><i data-page-node-id="A071DZggLic6wK8wcGoGEY"></i>重要程度 · 高</span>
-          </div>
-          <h3 class="ntitle" data-page-node-id="XFvwRm1Tlnm2ZBXpZdwkEy">
-            <a href="https://aihot.news/items/cmu2xqfxz02zhroc1hxuzi6jm" target="_blank" rel="noopener" data-page-node-id="gj0m1SQskDIDP7jp5NPK9D">
-              Google DeepMind 发布 Gemini 3.8 Live 与 3.8 Live Extended Thinking
-            </a>
-          </h3>
-          <p class="ndesc" data-page-node-id="PRIALZcvZip16JsiWBlOtb">
-            两款模型定位分工：Gemini 3.8 Live 面向近实时语音对话，Extended Thinking 侧重复杂任务执行，主打语音智能体场景。官方同步给出多项基准数字，可用于评估推理、成本与工具调用能力。
-          </p>
-          <div class="nstat" data-page-node-id="ZBCDVjgn0scPOBg7i7GdmA">
-            <span data-page-node-id="DP1cGWkOGcKSzIvgwKAZos">热点榜第 <b data-page-node-id="zr7jJz186VrS5gG2x7iv4e">4</b> 位</span>
-            <span data-page-node-id="ih274xQSWYUG0tY5hxBaHr"><b data-page-node-id="EkhvWAyqvcJqFZnI8GDF8j">14</b> 个信源收录</span>
-          </div>
-          <div class="nfoot" data-page-node-id="3Ls9RDDevJmxXtXwGUFuah">
-            <span class="src" data-page-node-id="tLNhOSURRl6po8ZWrELVUK">Google DeepMind：Blog</span>
-            <span class="time" data-page-node-id="uia4wCwlpWqg1Ig9JTdgAF">09-16 01:05</span>
-          </div>
-          <button class="done-btn" type="button" data-page-node-id="JuFdCxARQTewohKdIaiVET">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="ZoJal4Ohy6yzN4KwWuXlnC"><path d="M20 6 9 17l-5-5" data-page-node-id="Qa40GXIA9bWOb3DVnADpFT"/></svg>
-            <span data-page-node-id="E3WECKtijeOYKms4leiWc5">标记阅读完成</span>
+          <button class="save-btn" type="button" aria-pressed="false" aria-label="收藏 / 稍后阅读" title="收藏 / 稍后阅读">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4h11v16l-5.5-3.9L6.5 20V4Z"/></svg>
           </button>
+          <!-- 层级一：顶部信息行 -->
+          <div class="n-top">
+            <span class="n-idx">01</span>
+            <div class="n-main">
+              <h3 class="n-title">
+                <a href="https://aihot.news/items/cmu2xqfxz02zhroc1hxuzi6jm" target="_blank" rel="noopener">
+                  Google DeepMind 发布 Gemini 3.8 Live 与 3.8 Live Extended Thinking
+                </a>
+              </h3>
+              <div class="n-tags">
+                <span class="n-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 1.6 5 5.1 5 9.2L14.5 15h-5L7 12.2C7 8.1 9 4.6 12 3Z"/><circle cx="12" cy="9" r="1.3"/><path d="M9.6 16.2 7 21l3.1-1.1M14.4 16.2 17 21l-3.1-1.1"/></svg>模型发布</span>
+                <span class="n-tag">优先级：高</span>
+              </div>
+            </div>
+          </div>
+          <!-- 层级二：正文区（AI 提炼要点） -->
+          <div class="n-points-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6 12.5 8l4.4 1.5-4.4 1.5L11 15.4 9.5 11 5.1 9.5 9.5 8 11 3.6Z"/><path d="M18.4 14.6l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z"/></svg> AI 划重点</div>
+          <ul class="n-points">
+              <li>双版本分工：<b>Gemini 3.8 Live</b> 面向近实时语音对话，<b>Extended Thinking</b> 侧重复杂任务执行。</li>
+              <li>主打语音智能体场景，官方同步给出多项基准数字。</li>
+              <li>可用于评估推理、成本与工具调用三个维度。</li>
+          </ul>
+          <!-- 层级三：分割线 -->
+          <div class="n-rule" role="separator"></div>
+          <!-- 层级四：底部信息行 -->
+          <div class="n-bottom">
+            <div class="n-meta">
+              <span class="n-src">Google DeepMind: Blog</span>
+              <span class="sep">|</span>
+              <span class="n-stat">热点榜第 <b>4</b> 位</span>
+              <span class="sep">|</span>
+              <span class="n-stat"><b>14</b> 个信源收录</span>
+              <span class="sep">|</span>
+              <span class="n-time">09-16 01:05</span>
+            </div>
+            <button class="done-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>标记阅读完成</span>
+            </button>
+          </div>
         </article>
 
         <div class="col-stack">
 
         <!-- 卡片 2 -->
-        <article class="news" data-card="2" data-lvl="high" data-cat="产品发布" style="animation-delay:.20s" data-page-node-id="XLvsoU24A8Ja8PcxyPQGza">
-          <span class="done-badge" aria-hidden="true" data-page-node-id="2fhHeedrCOhph0adAxHt45">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="KTZbZu69LVA5jZyL0Ecy0f"><path d="M20 6 9 17l-5-5" data-page-node-id="D2fhzSvwPfaICfP7Qh8RdF"/></svg>
+        <article class="news" data-card="2" data-lvl="high" data-cat="产品发布">
+          <span class="done-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </span>
-          <div class="nhead" data-page-node-id="ol6pF35ataUSUheUcLoO1H">
-            <div class="ncat" data-page-node-id="PpdpWfXXkU1fNtvo9MzcUz"><span class="idx" data-page-node-id="dwF8sGAdFgSYkaxm6QULMY">02</span><span class="cat" data-page-node-id="LGSozh3CHnSk2yRD2JXtG2">产品发布</span></div>
-            <span class="lvl lvl-high" data-page-node-id="1KNRckyPLxs0q6vT1oRF2g"><i data-page-node-id="V6g7eRQMIRzfGoi9W3Gdsq"></i>重要程度 · 高</span>
-          </div>
-          <h3 class="ntitle" data-page-node-id="W2xYX9iHlMycyV6Sk5DQMM">
-            <a href="https://aihot.news/items/cmu1ju3b00pmgrocnrgwe6e9e" target="_blank" rel="noopener" data-page-node-id="ohaxU8LUGS08insqjhlubw">
-              Apple 发布新一代 Apple Intelligence，Siri AI 正式以测试版上线
-            </a>
-          </h3>
-          <p class="ndesc" data-page-node-id="VkyzBX7BoXxHFrfnEJz4Bb">
-            官方称这是更强大、更个性化的智能助理，Siri AI 以测试版面向用户开放；同期还发布 iOS 27、iPadOS 27、macOS 27 等系统更新，把新能力推向全平台。
-          </p>
-          <div class="nstat" data-page-node-id="jauPT9bkq3Ew9kpWgfhelV">
-            <span data-page-node-id="TwwrNHrLRxdWUhVQnXbhz8">热点榜第 <b data-page-node-id="HmNFuTvBKMvpyWKXAFRpnC">1</b> 位</span>
-            <span data-page-node-id="1bej79IhLh0mcuAMR0y2qM"><b data-page-node-id="NXHW6jv6pVYWsNLDSlLA7A">5</b> 个信源收录</span>
-            <span data-page-node-id="lrculoLXzEU4PA9anL8YiV">iOS 27 同步发布</span>
-          </div>
-          <div class="nfoot" data-page-node-id="qhumspYmfDzVzEUGnFhzzF">
-            <span class="src" data-page-node-id="MWhGHJlfHjKSDoSqlDPqjH">Apple：Newsroom</span>
-            <span class="time" data-page-node-id="HL1dK1HGR3jtx8uMQrGWfe">AIHOT 收录 09-16 08:06</span>
-          </div>
-          <button class="done-btn" type="button" data-page-node-id="Uh34CSi3VHts02xH0i7L8a">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="GoZGMCVCJw9D1zBFBHHTe5"><path d="M20 6 9 17l-5-5" data-page-node-id="BJmdB6zXm4uathnQX6eWcp"/></svg>
-            <span data-page-node-id="PW5LWkXZcuzCIcDe812bit">标记阅读完成</span>
+          <button class="save-btn" type="button" aria-pressed="false" aria-label="收藏 / 稍后阅读" title="收藏 / 稍后阅读">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4h11v16l-5.5-3.9L6.5 20V4Z"/></svg>
           </button>
+          <!-- 层级一：顶部信息行 -->
+          <div class="n-top">
+            <span class="n-idx">02</span>
+            <div class="n-main">
+              <h3 class="n-title">
+                <a href="https://aihot.news/items/cmu1ju3b00pmgrocnrgwe6e9e" target="_blank" rel="noopener">
+                  Apple 发布新一代 Apple Intelligence，Siri AI 正式以测试版上线
+                </a>
+              </h3>
+              <div class="n-tags">
+                <span class="n-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h13v14H5a1 1 0 0 1-1-1V5Z"/><path d="M17 8h3v9a2 2 0 0 1-2 2h-1"/><path d="M7 8.5h7M7 11.5h7M7 14.5h4"/></svg>产品发布</span>
+                <span class="n-tag">优先级：高</span>
+              </div>
+            </div>
+          </div>
+          <!-- 层级二：正文区（AI 提炼要点） -->
+          <div class="n-points-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6 12.5 8l4.4 1.5-4.4 1.5L11 15.4 9.5 11 5.1 9.5 9.5 8 11 3.6Z"/><path d="M18.4 14.6l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z"/></svg> AI 划重点</div>
+          <ul class="n-points">
+              <li>定位更强大、更个性化的智能助理，<b>Siri AI</b> 以测试版面向用户开放。</li>
+              <li>同期发布 <b>iOS 27 / iPadOS 27 / macOS 27</b>，新能力一次铺向全平台。</li>
+              <li>端侧智能助理竞争进入系统级整合阶段。</li>
+          </ul>
+          <!-- 层级三：分割线 -->
+          <div class="n-rule" role="separator"></div>
+          <!-- 层级四：底部信息行 -->
+          <div class="n-bottom">
+            <div class="n-meta">
+              <span class="n-src">Apple: Newsroom</span>
+              <span class="sep">|</span>
+              <span class="n-stat">热点榜第 <b>1</b> 位</span>
+              <span class="sep">|</span>
+              <span class="n-stat"><b>5</b> 个信源收录</span>
+              <span class="sep">|</span>
+              <span class="n-time">AIHOT 收录 09-16 08:06</span>
+            </div>
+            <button class="done-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>标记阅读完成</span>
+            </button>
+          </div>
         </article>
 
         <!-- 卡片 3 -->
-        <article class="news" data-card="3" data-lvl="mid" data-cat="行业动态" style="animation-delay:.30s" data-page-node-id="W3tMy1aoVQSl3faLa4hWho">
-          <span class="done-badge" aria-hidden="true" data-page-node-id="uBTK2ZvyHosK1M2CGgTEBQ">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="80dkLjB2XFzLBVehR0s8fe"><path d="M20 6 9 17l-5-5" data-page-node-id="yWLsxPtAJUSRToUDtDNXZH"/></svg>
+        <article class="news" data-card="3" data-lvl="mid" data-cat="行业动态">
+          <span class="done-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </span>
-          <div class="nhead" data-page-node-id="x7Nl444bu8Y47swdaW1e0G">
-            <div class="ncat" data-page-node-id="eC0OFTa5pEa4GmY0gwMf15"><span class="idx" data-page-node-id="HCEY1EYTHHXegyiOrAJRAV">03</span><span class="cat" data-page-node-id="e0bHSqoALfDjODWoZJDKV8">行业动态</span></div>
-            <span class="lvl lvl-mid" data-page-node-id="cDY31I8mw3jh9Q6nJTtfJZ"><i data-page-node-id="o6LOBco2PCEveqkmecHYKD"></i>重要程度 · 中</span>
-          </div>
-          <h3 class="ntitle" data-page-node-id="BBWlhM7ZIgQ9GkYc9G8tqc">
-            <a href="https://aihot.news/items/cmu352k2908t9rosaotpsx42c" target="_blank" rel="noopener" data-page-node-id="RbmlJoC08DAFZZRjumHDuJ">
-              Perplexity 自研 CobbleDB 替代 AWS DynamoDB，每年最多可节省一亿美元
-            </a>
-          </h3>
-          <p class="ndesc" data-page-node-id="y7ZEcPAjs4ljCM2N2xfnNP">
-            CEO Aravind Srinivas 宣布以自研键值数据库 CobbleDB 替换 AWS DynamoDB，用于快速网页内容抓取。项目由 2 名工程师与数百个持续运行的 Computer 智能体在两个月内完成核心基础设施。
-          </p>
-          <div class="nstat" data-page-node-id="7hMMiwRdiWmkX3R1w6lyMZ">
-            <span data-page-node-id="cAqkC0oPJ09XkkYHvpaKod">读取延迟 P50 <b data-page-node-id="G9ykm6CsjxJRWRrHCGLYUA">31.4ms → 5.6ms</b></span>
-            <span data-page-node-id="vF4zHkUh02hcdQFkpuc1rT">年省最高 <b data-page-node-id="kfkYEt993kagJ7vObZ7N8D">1 亿美元</b></span>
-          </div>
-          <div class="nfoot" data-page-node-id="GMsmAV56bQFbSKKfsCfNQg">
-            <span class="src" data-page-node-id="KRAGpXXKpElUt2zHEyAsTd">X：Aravind Srinivas</span>
-            <span class="time" data-page-node-id="KPTacBPkeAI0FJjsYZ6c9k">09-16 04:23</span>
-          </div>
-          <button class="done-btn" type="button" data-page-node-id="EHCXzzH9eeTLXljyiPZVsl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="DOZ7vxBa2pYWeUOWeARBvP"><path d="M20 6 9 17l-5-5" data-page-node-id="lxLOsDfJLI4dyUHkrDHRas"/></svg>
-            <span data-page-node-id="d9iUDjc98Wm0lMRUUi7voO">标记阅读完成</span>
+          <button class="save-btn" type="button" aria-pressed="false" aria-label="收藏 / 稍后阅读" title="收藏 / 稍后阅读">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4h11v16l-5.5-3.9L6.5 20V4Z"/></svg>
           </button>
+          <!-- 层级一：顶部信息行 -->
+          <div class="n-top">
+            <span class="n-idx">03</span>
+            <div class="n-main">
+              <h3 class="n-title">
+                <a href="https://aihot.news/items/cmu352k2908t9rosaotpsx42c" target="_blank" rel="noopener">
+                  Perplexity 自研 CobbleDB 替代 AWS DynamoDB，每年最多可节省一亿美元
+                </a>
+              </h3>
+              <div class="n-tags">
+                <span class="n-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.3M12 18.7V21M4.2 7.5l2 1.1M17.8 15.4l2 1.1M4.2 16.5l2-1.1M17.8 8.6l2-1.1"/></svg>行业动态</span>
+                <span class="n-tag">优先级：中</span>
+              </div>
+            </div>
+          </div>
+          <!-- 层级二：正文区（AI 提炼要点） -->
+          <div class="n-points-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.6 12.5 8l4.4 1.5-4.4 1.5L11 15.4 9.5 11 5.1 9.5 9.5 8 11 3.6Z"/><path d="M18.4 14.6l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z"/></svg> AI 划重点</div>
+          <ul class="n-points">
+              <li>以自研键值数据库 <b>CobbleDB</b> 替换 AWS DynamoDB，用于快速网页内容抓取。</li>
+              <li>项目由 <b>2 名工程师</b> + 数百个 Computer 智能体，两个月完成核心基础设施。</li>
+              <li>年省最高 <b>1 亿美元</b>；读取延迟 P50 由 31.4ms 降至 5.6ms。</li>
+          </ul>
+          <!-- 层级三：分割线 -->
+          <div class="n-rule" role="separator"></div>
+          <!-- 层级四：底部信息行 -->
+          <div class="n-bottom">
+            <div class="n-meta">
+              <span class="n-src">X: Aravind Srinivas</span>
+              <span class="sep">|</span>
+              <span class="n-stat">读取延迟 P50 <b>31.4ms → 5.6ms</b></span>
+              <span class="sep">|</span>
+              <span class="n-stat">年省最高 <b>1 亿美元</b></span>
+              <span class="sep">|</span>
+              <span class="n-time">09-16 04:23</span>
+            </div>
+            <button class="done-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>标记阅读完成</span>
+            </button>
+          </div>
         </article>
         </div>
+
 
         <div class="cards-empty" id="cardsEmpty" hidden>
           <p class="ce-t">当前筛选组合下暂无精读卡片，试试放宽条件或回到全部精选。</p>
@@ -1252,47 +1761,96 @@
               <span class="l-hint">点击行可筛选</span>
             </span>
           </div>
-          <ul class="tlist" style="margin-top:12px" data-page-node-id="DSUiFgd79ba1jnulJFEsrH">
-            <li class="titem" data-board="模型发布" role="button" tabindex="0" aria-pressed="false" data-page-node-id="E8sqPUNxpHRzUf95Hj8ype">
-              <span class="tleft" data-page-node-id="HL9Pb5i56GktatqfEY9Vt9"><span class="tname" data-page-node-id="JjL3HYxj9QBRNYzCDaB2V2">模型发布/更新</span></span>
-              <span class="tright" data-page-node-id="7qFAHTNcdVIktlacKn8yd4"><b class="tnum" data-page-node-id="H41B67PgLJANimKWGNBRAE">3</b><em class="tdelta up" data-page-node-id="z2n2UnQYABUMOxGEwoO9J8"><span class="arw" data-page-node-id="9fwThM90QR886illX7GmRm">↑</span><span class="dl" data-page-node-id="0z8UEw5pDICaDertDR38td">1</span></em></span>
+          <ul class="tlist" style="margin-top:12px" aria-label="板块分布横向条形图">
+            <li class="titem" data-board="模型发布" role="button" tabindex="0" aria-pressed="false">
+              <span class="tleft"><span class="tname">模型发布/更新</span></span>
+              <span class="tbar" aria-hidden="true"><i class="tbar-fill"></i></span>
+              <b class="tnum">3</b>
+              <span class="tright"><em class="tdelta up"><span class="arw">↑</span><span class="dl">1</span></em></span>
             </li>
-            <li class="titem" data-board="产品发布" role="button" tabindex="0" aria-pressed="false" data-page-node-id="KqVVH44Lhj9HZhSaBZzaAW">
-              <span class="tleft" data-page-node-id="l8XlYgZpFdnaVDufy98oP8"><span class="tname" data-page-node-id="dAKNgVq8kJ0oZL79AnpFar">产品发布/更新</span></span>
-              <span class="tright" data-page-node-id="udI14yVoNgQFIZqrtZzHaX"><b class="tnum" data-page-node-id="YcZiHaV5R3Ipb77iMUKa1Y">2</b><em class="tdelta up" data-page-node-id="SlTl5aIEGtXyqbrN7A5gGH"><span class="arw" data-page-node-id="Ni7Nf7YEhkKQ3G3pLCPD1W">↑</span><span class="dl" data-page-node-id="rZG25vIEQDDMhcaklK5Nmx">1</span></em></span>
+            <li class="titem" data-board="产品发布" role="button" tabindex="0" aria-pressed="false">
+              <span class="tleft"><span class="tname">产品发布/更新</span></span>
+              <span class="tbar" aria-hidden="true"><i class="tbar-fill"></i></span>
+              <b class="tnum">2</b>
+              <span class="tright"><em class="tdelta up"><span class="arw">↑</span><span class="dl">1</span></em></span>
             </li>
-            <li class="titem" data-board="行业动态" role="button" tabindex="0" aria-pressed="false" data-page-node-id="USgHMYNYxlgYPZLg3VGoES">
-              <span class="tleft" data-page-node-id="TVW970kjjxclwaBpCEKSmd"><span class="tname" data-page-node-id="GQy4VlrCxtyUoXF6DtT5V0">行业动态</span></span>
-              <span class="tright" data-page-node-id="qxVQ3ZEweGMfVvI3QVZGFV"><b class="tnum" data-page-node-id="0csa13aolzGFla9BOvFy5E">1</b><em class="tdelta flat" data-page-node-id="iLcWjtn5XCkz861N9aBO6B"><span class="arw" data-page-node-id="82FoS0U3STfGsrhpEre245">—</span><span class="dl" data-page-node-id="Roy25x2q1cfBHqPEuCKJuL"></span></em></span>
+            <li class="titem" data-board="行业动态" role="button" tabindex="0" aria-pressed="false">
+              <span class="tleft"><span class="tname">行业动态</span></span>
+              <span class="tbar" aria-hidden="true"><i class="tbar-fill"></i></span>
+              <b class="tnum">1</b>
+              <span class="tright"><em class="tdelta flat"><span class="arw">—</span><span class="dl"></span></em></span>
             </li>
-            <li class="titem" data-board="观点技巧" role="button" tabindex="0" aria-pressed="false" data-page-node-id="MqpaFqdxFzws4iGAZBFvWl">
-              <span class="tleft" data-page-node-id="HibWFfq9ObmqpPizs1OG8f"><span class="tname" data-page-node-id="ttXI3QNAO1aKezKJywRQGc">技巧与观点</span></span>
-              <span class="tright" data-page-node-id="CDbftzslvTupx96vEgqIiL"><b class="tnum" data-page-node-id="WgbYPWvmlvxrLibzJ0GdHp">7</b><em class="tdelta up" data-page-node-id="F5RqDqqjloABizgtlfWk8U"><span class="arw" data-page-node-id="BEyASPhBqBlOrHx2NEZRnv">↑</span><span class="dl" data-page-node-id="i8ECa0NQe5x7ctQrbg2Gzl">3</span></em></span>
+            <li class="titem" data-board="观点技巧" role="button" tabindex="0" aria-pressed="false">
+              <span class="tleft"><span class="tname">技巧与观点</span></span>
+              <span class="tbar" aria-hidden="true"><i class="tbar-fill"></i></span>
+              <b class="tnum">7</b>
+              <span class="tright"><em class="tdelta up"><span class="arw">↑</span><span class="dl">3</span></em></span>
             </li>
-            <li class="titem" data-board="论文研究" role="button" aria-disabled="true" data-page-node-id="2vgtwaqc5ZMj7F4gtFdBAX">
-              <span class="tleft" data-page-node-id="AqUOgF2jHPgt7RGrb34xD3"><span class="tname" data-page-node-id="bFkL4r8P7iA94SxvGV23ID">论文研究</span></span>
-              <span class="tright" data-page-node-id="vVXZtgl1qyxNVDMNOWHqfG"><b class="tnum" data-page-node-id="DOOwPR1RSMu8rqJTYozrgj">0</b><em class="tdelta down" data-page-node-id="7U2AKXYm42lkTBpY1tTeZy"><span class="arw" data-page-node-id="cmZzri9ooNLg4G1NofzJM7">↓</span><span class="dl" data-page-node-id="pQ8j7fdS5477Q0rbelANaS">1</span></em></span>
+            <li class="titem" data-board="论文研究" role="button" aria-disabled="true">
+              <span class="tleft"><span class="tname">论文研究</span></span>
+              <span class="tbar" aria-hidden="true"><i class="tbar-fill"></i></span>
+              <b class="tnum">0</b>
+              <span class="tright"><em class="tdelta down"><span class="arw">↓</span><span class="dl">1</span></em></span>
             </li>
           </ul>
         </div>
 
         <div data-page-node-id="EoEHN12iHp13zCPUHIcnHB">
           <div class="block-title" data-page-node-id="vcHeIVI4o0uA7SUQBbEi0O"><span data-page-node-id="1JAqKAfGDaPCS7mcNCUCiU">热点关键词</span></div>
-          <div class="kw" style="margin-top:12px" data-page-node-id="3QgcVy6wpZTydJxWk8FHCt">
-            <span class="hot" data-page-node-id="GiKGIoE7iWArRMRgNPFDcY">Siri AI</span>
-            <span class="hot" data-page-node-id="PIISfhTnsyKlNmre9Q2z1v">放缓前沿开发</span>
-            <span class="hot" data-page-node-id="rZSRnXrvSRnw311RbqxBlP">Gemini 3.8 Live</span>
-            <span data-page-node-id="33Sh1LNGAjBH93usvhl5W0">Codex 智能体</span>
-            <span data-page-node-id="pa63bmQ770l2kzpmyjPtiV">StepAudio 3</span>
-            <span data-page-node-id="5T1HezopOHERLkwoSrfnKP">DeepSeek IPO</span>
-            <span data-page-node-id="jGCwmwOILFmhjrhyWiBPB8">Vidu S2</span>
-            <span data-page-node-id="bWCI40We7suHgAQdtdhwxz">CobbleDB</span>
+          <div class="kw" style="margin-top:12px" aria-label="热点关键词">
+            <span class="kw-tech is-top kw-l">Siri AI</span>
+            <span class="kw-view kw-l">放缓前沿开发</span>
+            <span class="kw-tech kw-l">Gemini 3.8 Live</span>
+            <span class="kw-prod">Codex 智能体</span>
+            <span class="kw-tech">StepAudio 3</span>
+            <span class="kw-cap kw-l">DeepSeek IPO</span>
+            <span class="kw-prod kw-s">Vidu S2</span>
+            <span class="kw-cap">CobbleDB</span>
           </div>
-          <div class="kwcap" data-page-node-id="jyGRyDJLVOSSJnJm56RD0V">
-            <span class="kc" data-page-node-id="coNITb6rLaVeKipTxHtUxF"><em class="kdot kd-today" data-page-node-id="53HxSJS2X2wzcDGbRS2PvC"></em><i class="kt" data-page-node-id="GJbnRpJqvYXHJr6VAjAssD">今日高热</i></span>
-            <span class="kc" data-page-node-id="Aw3rxGhQLhGUSyLMsFPIsF"><em class="kdot kd-yest" data-page-node-id="xjxqyuZcgy0FDeZDWFxD3B"></em><i class="kt" data-page-node-id="54qc4T0OKlivH00UCxpqya">常态关注</i></span>
-            <span class="kmore" data-page-node-id="oBV50TDRcMPu0iQyYmw5yj">共 8 个</span>
+          <div class="kwcap">
+            <span class="kc"><em class="kdot kd-today"></em><i class="kt">技术</i></span>
+            <span class="kc"><em class="kdot kd-yest"></em><i class="kt">资本</i></span>
+            <span class="kc"><em class="kdot kd-yest"></em><i class="kt">产品 / 观点</i></span>
+            <span class="kmore">共 8 个</span>
           </div>
+        </div>
+
+        <!-- ============ 实时动态时间轴 ============ -->
+        <div class="tl-block">
+          <div class="block-title"><span>实时更新</span><span class="legend"><span class="l-hint">今日时间轴</span></span></div>
+          <ul class="tl">
+            <li class="is-live">
+              <span class="tl-time">08:06</span><span class="tl-txt">Apple 官宣新一代 <b>Apple Intelligence</b>，Siri AI 测试版上线</span>
+              <span class="tl-badge">最新</span>
+            </li>
+            <li>
+              <span class="tl-time">04:23</span><span class="tl-txt">Perplexity 自研 <b>CobbleDB</b> 替换 DynamoDB，年省最高 1 亿美元</span>
+            </li>
+            <li>
+              <span class="tl-time">01:05</span><span class="tl-txt">Google DeepMind 发布 <b>Gemini 3.8 Live</b> 语音模型</span>
+            </li>
+            <li>
+              <span class="tl-time">10:30</span><span class="tl-txt">行业分析报告出炉：<b>前沿模型放缓</b>共识升温</span>
+            </li>
+            <li>
+              <span class="tl-time">12:40</span><span class="tl-txt">阶跃星辰 <b>StepAudio 3</b> 上线近实时语音对话</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ============ 反馈 / 有用 ============ -->
+        <div class="feedback">
+          <span class="fb-t">今日日报对你有帮助吗？</span>
+          <span class="fb-group">
+            <button class="fb-btn" type="button" id="usefulBtn" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Z"/><path d="M7 10l4.2-7.1a1 1 0 0 1 1.8.5V10h5.3a2 2 0 0 1 2 2.4l-1.4 7A2 2 0 0 1 17 21H7"/></svg>
+              <span id="usefulText">有用</span>
+            </button>
+            <button class="fb-btn" type="button" id="fbBtn2" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"/></svg>
+              <span>反馈</span>
+            </button>
+          </span>
         </div>
 
         <div class="progress" data-page-node-id="tUeFyMGUIHaDDEQuJZj0J0">
@@ -1321,22 +1879,14 @@
 (function () {
   'use strict';
 
-  /* ---------- 1. 16:9 等比缩放，适配任意窗口 / 录屏分辨率 ---------- */
+  /* ---------- 1. 窄屏 / 高屏自适应：清除整体缩放，交由页面全局滚动承载长内容 ---------- */
   var stage = document.getElementById('stage');
-  var NARROW = 860; // 断点与样式表的媒体查询保持一致
-
-  function isNarrow() { return window.innerWidth <= NARROW; }
-
+  /* 统一流式布局：画板宽度自适应视口（CSS width:min(1600px,100%)），
+     不再做整体 scale 缩放；内容超出时由页面右侧全局滚动条浏览。 */
   function fitStage() {
-    // 手机 / 窄屏：走 CSS 流式单列布局，清除整体缩放
-    if (isNarrow()) {
-      stage.style.transform = '';
-      return;
-    }
-    var s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
-    // 留一点边距，避免贴边
-    s = Math.min(s, 1.6);
-    stage.style.transform = 'scale(' + s + ')';
+    stage.style.transform = '';
+    stage.style.width = '';
+    stage.style.marginBottom = '';
   }
   window.addEventListener('resize', fitStage);
   fitStage();
@@ -1348,6 +1898,12 @@
   var resetBtn = document.getElementById('resetBtn');
 
   var state = cards.map(function () { return false; });
+
+  /* 1b. 「显示 x / x 条」移到卡片 03 右上角，作为绝对定位的小字提示（不占正文空间） */
+  var filterCountEl = document.getElementById('filterCount');
+  if (filterCountEl && cards[2]) {
+    cards[2].appendChild(filterCountEl);
+  }
 
   function render() {
     var done = state.filter(Boolean).length;
@@ -1625,6 +2181,77 @@
     }
   });
 
+
+  /* ---------- 5. 【动效】资讯卡片滚入视口 stagger 交错入场（Intersection Observer API） ----------
+     性能友好：只动画 transform / opacity；卡片之间按 0.05s 递增延迟，形成瀑布流出现效果。
+     筛选切换后重新进入视口的卡片也会再次触发（hidden 卡片自动跳过）。 */
+  var REVEAL_STEP = 50;   // 每张卡片递增 50ms（= 0.05s）
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initReveal() {
+    // 降级：不支持 IntersectionObserver 或用户偏好减少动效时，直接全部显示
+    if (reduceMotion || typeof IntersectionObserver === 'undefined') {
+      cards.forEach(function (c) { c.classList.add('reveal-in'); });
+      return;
+    }
+
+    // 初始：隐藏待入场状态（CSS 类只改 opacity / transform）
+    cards.forEach(function (card) {
+      if (!card.hidden && !card.classList.contains('reveal-in')) {
+        card.classList.add('reveal-init');
+      }
+    });
+
+    var io = new IntersectionObserver(function (entries) {
+      // 按 DOM 顺序排序，保证同一批进入视口的卡片按阅读顺序依次出现
+      var batch = entries.filter(function (e) { return e.isIntersecting; });
+      batch.sort(function (a, b) {
+        return cards.indexOf(a.target) - cards.indexOf(b.target);
+      });
+      batch.forEach(function (entry, i) {
+        var card = entry.target;
+        // stagger：同批卡片按 0.05s 递增延迟
+        card.style.transitionDelay = (i * REVEAL_STEP) + 'ms';
+        card.classList.remove('reveal-init');
+        card.classList.add('reveal-in');
+        // 动画结束后清掉 delay，避免影响后续 hover 过渡
+        window.setTimeout(function () { card.style.transitionDelay = ''; },
+          i * REVEAL_STEP + 620);
+        io.unobserve(card);
+      });
+    }, { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    cards.forEach(function (card) { io.observe(card); });
+
+    /* 筛选切换后：把重新显示的卡片重新设为待入场状态并再次观察 */
+    var origRenderList = renderList;
+    renderList = function () {
+      origRenderList.apply(this, arguments);
+      cards.forEach(function (card) {
+        if (card.hidden) return;
+        if (!card.classList.contains('reveal-in')) return;
+        card.classList.remove('reveal-in');
+        card.classList.add('reveal-init');
+        io.observe(card);
+      });
+    };
+  }
+  initReveal();
+
+  /* ---------- 6. 【动效】「标记完成」勾选弹跳：图标 scale 1.0 -> 1.2 -> 1.0 ---------- */
+  cards.forEach(function (card) {
+    var btn = card.querySelector('.done-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      card.classList.remove('pop');
+      void card.offsetWidth;              // 强制重排，连续点击也能重播动画
+      card.classList.add('pop');
+    });
+    card.addEventListener('animationend', function (e) {
+      if (e.animationName === 'checkPop') card.classList.remove('pop');
+    });
+  });
+
   /* ---------- 5. 顶部滚动进度条（随页面滚动 0 → 100%） ---------- */
   var sprog = document.getElementById('scrollProgress');
   function updateScrollProgress() {
@@ -1637,7 +2264,7 @@
   window.addEventListener('resize', updateScrollProgress);
   updateScrollProgress();
 
-  /* ---------- 6. 热点关键词胶囊：点击按压缩放回弹 ---------- */
+  /* ---------- 7. 热点关键词胶囊：点击按压缩放回弹 ---------- */
   Array.prototype.slice.call(document.querySelectorAll('.kw span')).forEach(function (el) {
     el.addEventListener('click', function () {
       el.classList.remove('kwpop');
@@ -1655,6 +2282,61 @@
   window.addEventListener('load', function () { placeAll(true); });
   if (document.fonts && document.fonts.ready && document.fonts.ready.then) {
     document.fonts.ready.then(function () { placeAll(true); });
+  }
+})();
+</script>
+
+<script>
+/* ============================================================
+   第 25 轮 · 新增组件交互（收藏 / 有用 / 反馈）
+   独立 IIFE，不改动上方既有的筛选、阅读进度与快捷键逻辑
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* 1. 卡片「收藏 / 稍后阅读」：点击切换状态，状态用 aria-pressed + is-on 表达 */
+  Array.prototype.slice.call(document.querySelectorAll('.cards .news .save-btn')).forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var on = btn.classList.toggle('is-on');
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.setAttribute('title', on ? '已收藏' : '收藏 / 稍后阅读');
+      btn.setAttribute('aria-label', on ? '取消收藏' : '收藏 / 稍后阅读');
+    });
+  });
+
+  /* 2. 右侧栏「有用 / 反馈」：轻量状态反馈 */
+  var usefulBtn = document.getElementById('usefulBtn');
+  var usefulText = document.getElementById('usefulText');
+  if (usefulBtn) {
+    usefulBtn.addEventListener('click', function () {
+      var on = usefulBtn.classList.toggle('is-on');
+      usefulBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (usefulText) usefulText.textContent = on ? '已标记有用' : '有用';
+    });
+  }
+  var fbBtn2 = document.getElementById('fbBtn2');
+  if (fbBtn2) {
+    fbBtn2.addEventListener('click', function () {
+      var on = fbBtn2.classList.toggle('is-on');
+      fbBtn2.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var span = fbBtn2.querySelector('span');
+      if (span) span.textContent = on ? '已收到反馈' : '反馈';
+    });
+  }
+
+  /* 3. 「阅读全文」平滑定位到对应卡片，强化头部大卡片与列表的联动 */
+  var more = document.querySelector('.headline-more');
+  if (more) {
+    more.addEventListener('click', function (e) {
+      var target = document.querySelector('.cards .news[data-card="2"]');
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.add('pop');
+      setTimeout(function () { target.classList.remove('pop'); }, 700);
+    });
   }
 })();
 </script>
